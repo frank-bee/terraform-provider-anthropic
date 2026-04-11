@@ -1,59 +1,79 @@
 # Terraform Provider Anthropic
 
-Unofficial Terraform provider for Anthropic.
+Terraform provider for Anthropic — manages Admin API resources (workspaces, members, invites) and **Managed Agents API** resources (agents, environments).
 
-## Support Development
+> Fork of [jianyuan/terraform-provider-anthropic](https://github.com/jianyuan/terraform-provider-anthropic) with Managed Agents support added.
 
-If you find this provider useful, please consider supporting me through GitHub Sponsorship or Ko-Fi to help with its development.
+## Resources
 
-[![Github-sponsors](https://img.shields.io/badge/sponsor-30363D?style=for-the-badge&logo=GitHub-Sponsors&logoColor=#EA4AAA)](https://github.com/sponsors/jianyuan)
-[![Ko-Fi](https://img.shields.io/badge/Ko--fi-F16061?style=for-the-badge&logo=ko-fi&logoColor=white)](https://ko-fi.com/L3L71DQEL)
+### Admin API
+- `anthropic_workspace` — Create and manage workspaces
+- `anthropic_workspace_member` — Manage workspace members
+- `anthropic_organization_invite` — Manage organization invites
+
+### Managed Agents API (Beta)
+- `anthropic_agent` — Create and manage agents with models, tools, MCP servers, and skills
+- `anthropic_environment` — Create and manage agent environments with networking and packages
+
+### Data Sources
+- `anthropic_agents` — List all managed agents
+- `anthropic_environments` — List all environments
+- `anthropic_workspace`, `anthropic_workspaces`, `anthropic_user`, `anthropic_users`, etc.
+
+## Usage
+
+```hcl
+terraform {
+  required_providers {
+    anthropic = {
+      source = "frank-bee/anthropic"
+    }
+  }
+}
+
+provider "anthropic" {
+  # Set via ANTHROPIC_API_KEY env var
+}
+
+resource "anthropic_agent" "assistant" {
+  name  = "my-assistant"
+  model = "claude-sonnet-4-5"
+
+  tools {
+    type = "agent_toolset_20251212"
+  }
+}
+
+resource "anthropic_environment" "dev" {
+  name            = "dev-environment"
+  networking_type = "unrestricted"
+  packages = {
+    "python" = "3.12"
+  }
+}
+```
 
 ## Requirements
 
 - [Terraform](https://developer.hashicorp.com/terraform/downloads) >= 1.0
 - [Go](https://golang.org/doc/install) >= 1.22
 
-## Building The Provider
-
-1. Clone the repository
-1. Enter the repository directory
-1. Build the provider using the Go `install` command:
+## Building
 
 ```shell
 go install
 ```
 
-## Adding Dependencies
-
-This provider uses [Go modules](https://github.com/golang/go/wiki/Modules).
-Please see the Go documentation for the most up to date information about using Go modules.
-
-To add a new dependency `github.com/author/dependency` to your Terraform provider:
+## Testing
 
 ```shell
-go get github.com/author/dependency
-go mod tidy
-```
+# Unit tests
+make test
 
-Then commit the changes to `go.mod` and `go.sum`.
-
-## Using the provider
-
-Please refer to the [provider documentation on the Terraform registry](https://registry.terraform.io/providers/jianyuan/anthropic/latest/docs).
-
-## Developing the Provider
-
-If you wish to work on the provider, you'll first need [Go](http://www.golang.org) installed on your machine (see [Requirements](#requirements) above).
-
-To compile the provider, run `go install`. This will build the provider and put the provider binary in the `$GOPATH/bin` directory.
-
-To generate or update documentation, run `make generate`.
-
-In order to run the full suite of Acceptance tests, run `make testacc`.
-
-_Note:_ Acceptance tests create real resources, and often cost money to run.
-
-```shell
+# Acceptance tests (requires ANTHROPIC_API_KEY)
 make testacc
 ```
+
+## License
+
+MIT — see [LICENSE](LICENSE).

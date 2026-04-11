@@ -6,7 +6,7 @@ import (
 	"log"
 
 	"github.com/hashicorp/terraform-plugin-framework/providerserver"
-	"github.com/jianyuan/terraform-provider-anthropic/internal/provider"
+	"github.com/frank-bee/terraform-provider-anthropic/internal/provider"
 )
 
 // Format Terraform code for use in documentation.
@@ -36,7 +36,7 @@ func main() {
 		// TODO: Update this string with the published name of your provider.
 		// Also update the tfplugindocs generate command to either remove the
 		// -provider-name flag or set its value to the updated provider name.
-		Address: "registry.terraform.io/jianyuan/anthropic",
+		Address: "registry.terraform.io/frank-bee/anthropic",
 		Debug:   debug,
 	}
 
