@@ -739,6 +739,8 @@ components:
       properties:
         type:
           type: string
+        mcp_server_name:
+          type: string
     AgentMcpServer:
       type: object
       required:

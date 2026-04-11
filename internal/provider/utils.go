@@ -9,6 +9,10 @@ func BuildTwoPartId(a, b string) string {
 	return fmt.Sprintf("%s/%s", a, b)
 }
 
+func ptrTo[T any](v T) *T {
+	return &v
+}
+
 func SplitTwoPartId(id, a, b string) (string, string, error) {
 	parts := strings.Split(id, "/")
 	if len(parts) != 2 || parts[0] == "" || parts[1] == "" {

@@ -139,7 +139,7 @@ func (r *AgentResource) Create(ctx context.Context, req resource.CreateRequest, 
 		for _, s := range data.McpServers {
 			tools = append(tools, apiclient.AgentTool{
 				Type:          "mcp_toolset",
-				McpServerName: s.Name.ValueString(),
+				McpServerName: ptrTo(s.Name.ValueString()),
 			})
 		}
 		body.Tools = &tools
@@ -265,7 +265,7 @@ func (r *AgentResource) Update(ctx context.Context, req resource.UpdateRequest, 
 	for _, s := range data.McpServers {
 		tools = append(tools, apiclient.AgentTool{
 			Type:          "mcp_toolset",
-			McpServerName: s.Name.ValueString(),
+			McpServerName: ptrTo(s.Name.ValueString()),
 		})
 	}
 	body.Tools = &tools
