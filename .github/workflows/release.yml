@@ -14,7 +14,31 @@ permissions:
   contents: write
 
 jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-go@v6
+        with:
+          go-version-file: "go.mod"
+          cache: true
+      - run: go mod download
+      - run: go build -v .
+      - name: Run linters
+        uses: golangci/golangci-lint-action@v9
+        with:
+          version: latest
+      - name: Run acceptance tests
+        env:
+          TF_ACC: "1"
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: go test -v -cover -run "TestAcc(Agent|Skill)Resource" ./internal/provider/
+        timeout-minutes: 10
+
   goreleaser:
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
