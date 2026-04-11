@@ -14,16 +14,18 @@ import (
 func TestAccSkillResource_basic(t *testing.T) {
 	rn := "anthropic_skill.test"
 	skillName := acctest.RandomWithPrefix("tf-skill")
+	displayTitle := acctest.RandomWithPrefix("TF Skill")
+	displayTitleUpdated := acctest.RandomWithPrefix("TF Skill Updated")
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:                 func() { acctest.PreCheckManagedAgents(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccSkillResourceConfig_basic(skillName),
+				Config: testAccSkillResourceConfig(skillName, displayTitle, "A test skill created by Terraform"),
 				ConfigStateChecks: []statecheck.StateCheck{
 					statecheck.ExpectKnownValue(rn, tfjsonpath.New("id"), knownvalue.NotNull()),
-					statecheck.ExpectKnownValue(rn, tfjsonpath.New("display_title"), knownvalue.StringExact("TF Test Skill")),
+					statecheck.ExpectKnownValue(rn, tfjsonpath.New("display_title"), knownvalue.StringExact(displayTitle)),
 					statecheck.ExpectKnownValue(rn, tfjsonpath.New("skill_name"), knownvalue.StringExact(skillName)),
 					statecheck.ExpectKnownValue(rn, tfjsonpath.New("source"), knownvalue.StringExact("custom")),
 					statecheck.ExpectKnownValue(rn, tfjsonpath.New("latest_version"), knownvalue.NotNull()),
@@ -31,50 +33,31 @@ func TestAccSkillResource_basic(t *testing.T) {
 				},
 			},
 			{
-				Config: testAccSkillResourceConfig_updated(skillName),
+				Config: testAccSkillResourceConfig(skillName, displayTitleUpdated, "An updated test skill"),
 				ConfigStateChecks: []statecheck.StateCheck{
 					statecheck.ExpectKnownValue(rn, tfjsonpath.New("id"), knownvalue.NotNull()),
-					statecheck.ExpectKnownValue(rn, tfjsonpath.New("display_title"), knownvalue.StringExact("TF Test Skill Updated")),
+					statecheck.ExpectKnownValue(rn, tfjsonpath.New("display_title"), knownvalue.StringExact(displayTitleUpdated)),
 				},
 			},
 		},
 	})
 }
 
-func testAccSkillResourceConfig_basic(skillName string) string {
+func testAccSkillResourceConfig(skillName, displayTitle, description string) string {
 	return fmt.Sprintf(`
 resource "anthropic_skill" "test" {
-	display_title = "TF Test Skill"
+	display_title = %[2]q
 	skill_name    = %[1]q
 	content       = <<-EOT
 ---
 name: %[1]s
-description: A test skill created by Terraform acceptance tests
+description: %[3]s
 ---
 
 # Test Skill
 
-You are a test skill. When invoked, respond with "Hello from test skill."
+You are a test skill.
 EOT
 }
-`, skillName)
-}
-
-func testAccSkillResourceConfig_updated(skillName string) string {
-	return fmt.Sprintf(`
-resource "anthropic_skill" "test" {
-	display_title = "TF Test Skill Updated"
-	skill_name    = %[1]q
-	content       = <<-EOT
----
-name: %[1]s
-description: An updated test skill
----
-
-# Updated Test Skill
-
-You are an updated test skill.
-EOT
-}
-`, skillName)
+`, skillName, displayTitle, description)
 }
