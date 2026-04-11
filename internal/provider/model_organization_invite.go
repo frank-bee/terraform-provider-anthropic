@@ -1,8 +1,8 @@
 package provider
 
 import (
-	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/frank-bee/terraform-provider-anthropic/internal/apiclient"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
 type OrganizationInviteModel struct {

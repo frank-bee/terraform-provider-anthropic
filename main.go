@@ -5,8 +5,8 @@ import (
 	"flag"
 	"log"
 
-	"github.com/hashicorp/terraform-plugin-framework/providerserver"
 	"github.com/frank-bee/terraform-provider-anthropic/internal/provider"
+	"github.com/hashicorp/terraform-plugin-framework/providerserver"
 )
 
 // Format Terraform code for use in documentation.

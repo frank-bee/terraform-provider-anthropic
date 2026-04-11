@@ -13,13 +13,13 @@ import (
 
 // Skill represents a skill resource from the API.
 type Skill struct {
-	Type          string  `json:"type"`
-	Id            string  `json:"id"`
-	CreatedAt     string  `json:"created_at"`
-	UpdatedAt     string  `json:"updated_at"`
-	DisplayTitle  string  `json:"display_title"`
-	Source        string  `json:"source"`
-	LatestVersion string  `json:"latest_version"`
+	Type          string `json:"type"`
+	Id            string `json:"id"`
+	CreatedAt     string `json:"created_at"`
+	UpdatedAt     string `json:"updated_at"`
+	DisplayTitle  string `json:"display_title"`
+	Source        string `json:"source"`
+	LatestVersion string `json:"latest_version"`
 }
 
 // SkillVersion represents a specific version of a skill.

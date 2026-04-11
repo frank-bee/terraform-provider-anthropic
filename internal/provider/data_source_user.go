@@ -4,10 +4,10 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/frank-bee/terraform-provider-anthropic/internal/apiclient"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/datasource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/frank-bee/terraform-provider-anthropic/internal/apiclient"
 )
 
 type UserDataSourceModel struct {

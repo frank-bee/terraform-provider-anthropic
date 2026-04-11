@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/frank-bee/terraform-provider-anthropic/internal/apiclient"
 	"github.com/hashicorp/go-retryablehttp"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
 	"github.com/hashicorp/terraform-plugin-framework/function"
@@ -12,7 +13,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/provider/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/frank-bee/terraform-provider-anthropic/internal/apiclient"
 )
 
 // Ensure AnthropicProvider satisfies various provider interfaces.
