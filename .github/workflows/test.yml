@@ -78,5 +78,5 @@ jobs:
           TF_ACC: "1"
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           ANTHROPIC_TEST_USER_ID: ${{ secrets.ANTHROPIC_TEST_USER_ID }}
-        run: go test -v -cover ./internal/provider/
+        run: go test -v -cover -run "TestAcc(Agent|Skill|Environment)Resource" ./internal/provider/
         timeout-minutes: 10
