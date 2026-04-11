@@ -40,11 +40,18 @@ func (m *AgentModel) Fill(a apiclient.Agent) error {
 	m.Model = types.StringPointerValue(a.Model)
 
 	if a.Tools != nil {
-		tools := make([]AgentToolModel, len(*a.Tools))
-		for i, t := range *a.Tools {
-			tools[i] = AgentToolModel{
-				Type: types.StringValue(t.Type),
+		var tools []AgentToolModel
+		for _, t := range *a.Tools {
+			// Skip mcp_toolset entries — they are auto-generated from mcp_servers
+			if t.Type == "mcp_toolset" {
+				continue
 			}
+			tools = append(tools, AgentToolModel{
+				Type: types.StringValue(t.Type),
+			})
+		}
+		if tools == nil {
+			tools = []AgentToolModel{}
 		}
 		m.Tools = tools
 	} else {

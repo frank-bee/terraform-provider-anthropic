@@ -130,10 +130,17 @@ func (r *AgentResource) Create(ctx context.Context, req resource.CreateRequest, 
 		body.System = &system
 	}
 
-	if len(data.Tools) > 0 {
-		tools := make([]apiclient.AgentTool, len(data.Tools))
-		for i, t := range data.Tools {
-			tools[i] = apiclient.AgentTool{Type: t.Type.ValueString()}
+	if len(data.Tools) > 0 || len(data.McpServers) > 0 {
+		var tools []apiclient.AgentTool
+		for _, t := range data.Tools {
+			tools = append(tools, apiclient.AgentTool{Type: t.Type.ValueString()})
+		}
+		// Auto-add mcp_toolset entries for each MCP server
+		for _, s := range data.McpServers {
+			tools = append(tools, apiclient.AgentTool{
+				Type:          "mcp_toolset",
+				McpServerName: s.Name.ValueString(),
+			})
 		}
 		body.Tools = &tools
 	}
@@ -250,9 +257,16 @@ func (r *AgentResource) Update(ctx context.Context, req resource.UpdateRequest, 
 		body.System = &system
 	}
 
-	tools := make([]apiclient.AgentTool, len(data.Tools))
-	for i, t := range data.Tools {
-		tools[i] = apiclient.AgentTool{Type: t.Type.ValueString()}
+	var tools []apiclient.AgentTool
+	for _, t := range data.Tools {
+		tools = append(tools, apiclient.AgentTool{Type: t.Type.ValueString()})
+	}
+	// Auto-add mcp_toolset entries for each MCP server
+	for _, s := range data.McpServers {
+		tools = append(tools, apiclient.AgentTool{
+			Type:          "mcp_toolset",
+			McpServerName: s.Name.ValueString(),
+		})
 	}
 	body.Tools = &tools
 

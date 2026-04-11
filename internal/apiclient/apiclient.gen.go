@@ -60,7 +60,8 @@ type AgentSkillRequest struct {
 
 // AgentTool defines model for AgentTool.
 type AgentTool struct {
-	Type string `json:"type"`
+	Type          string `json:"type"`
+	McpServerName string `json:"mcp_server_name,omitempty"`
 }
 
 // CreateAgentRequest defines model for CreateAgentRequest.
