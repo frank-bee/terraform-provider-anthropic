@@ -345,6 +345,186 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+  # ==================== Managed Agents API ====================
+  /v1/agents:
+    get:
+      operationId: listAgents
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+        - name: page
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Agent"
+                  next_page:
+                    type: string
+                    nullable: true
+    post:
+      operationId: createAgent
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateAgentRequest"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Agent"
+  /v1/agents/{agent_id}:
+    get:
+      operationId: getAgent
+      parameters:
+        - name: agent_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Agent"
+    post:
+      operationId: updateAgent
+      parameters:
+        - name: agent_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateAgentRequest"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Agent"
+    delete:
+      operationId: deleteAgent
+      parameters:
+        - name: agent_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeletedResource"
+  /v1/environments:
+    get:
+      operationId: listEnvironments
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+        - name: page
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Environment"
+                  next_page:
+                    type: string
+                    nullable: true
+    post:
+      operationId: createEnvironment
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateEnvironmentRequest"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Environment"
+  /v1/environments/{environment_id}:
+    get:
+      operationId: getEnvironment
+      parameters:
+        - name: environment_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Environment"
+    post:
+      operationId: updateEnvironment
+      parameters:
+        - name: environment_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateEnvironmentRequest"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Environment"
+    delete:
+      operationId: deleteEnvironment
+      parameters:
+        - name: environment_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeletedResource"
+  # ==================== End Managed Agents API ====================
   /v1/organizations/workspaces/{workspace_id}/members/{user_id}:
     get:
       operationId: getWorkspaceMember
@@ -515,4 +695,217 @@ components:
         workspace_id:
           type: string
         workspace_role:
+          type: string
+    # ==================== Managed Agents Schemas ====================
+    AgentModelConfig:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+        speed:
+          type: string
+    AgentSkill:
+      type: object
+      required:
+        - skill_id
+        - type
+        - version
+      properties:
+        skill_id:
+          type: string
+        type:
+          type: string
+        version:
+          type: string
+    AgentSkillRequest:
+      type: object
+      required:
+        - id
+        - type
+        - version
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+        version:
+          type: string
+    AgentTool:
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          type: string
+    AgentMcpServer:
+      type: object
+      required:
+        - name
+        - type
+        - url
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+        url:
+          type: string
+    Agent:
+      type: object
+      required:
+        - id
+        - type
+        - version
+        - name
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+        version:
+          type: string
+        name:
+          type: string
+        model:
+          type: string
+        system:
+          type: string
+          nullable: true
+        status:
+          type: string
+        created_at:
+          type: string
+        updated_at:
+          type: string
+          nullable: true
+        skills:
+          type: array
+          items:
+            $ref: "#/components/schemas/AgentSkill"
+        tools:
+          type: array
+          items:
+            $ref: "#/components/schemas/AgentTool"
+        mcp_servers:
+          type: array
+          items:
+            $ref: "#/components/schemas/AgentMcpServer"
+    CreateAgentRequest:
+      type: object
+      required:
+        - name
+        - model
+      properties:
+        name:
+          type: string
+        model:
+          type: string
+        system:
+          type: string
+        tools:
+          type: array
+          items:
+            $ref: "#/components/schemas/AgentTool"
+        mcp_servers:
+          type: array
+          items:
+            $ref: "#/components/schemas/AgentMcpServer"
+        skills:
+          type: array
+          items:
+            $ref: "#/components/schemas/AgentSkillRequest"
+    UpdateAgentRequest:
+      type: object
+      required:
+        - version
+      properties:
+        version:
+          type: string
+        name:
+          type: string
+        model:
+          type: string
+        system:
+          type: string
+        tools:
+          type: array
+          items:
+            $ref: "#/components/schemas/AgentTool"
+        mcp_servers:
+          type: array
+          items:
+            $ref: "#/components/schemas/AgentMcpServer"
+        skills:
+          type: array
+          items:
+            $ref: "#/components/schemas/AgentSkillRequest"
+    EnvironmentNetworking:
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          type: string
+    EnvironmentConfig:
+      type: object
+      required:
+        - type
+        - networking
+      properties:
+        type:
+          type: string
+        networking:
+          $ref: "#/components/schemas/EnvironmentNetworking"
+        packages:
+          type: object
+          additionalProperties:
+            type: string
+    Environment:
+      type: object
+      required:
+        - id
+        - type
+        - name
+        - config
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+        name:
+          type: string
+        config:
+          $ref: "#/components/schemas/EnvironmentConfig"
+        created_at:
+          type: string
+        updated_at:
+          type: string
+    CreateEnvironmentRequest:
+      type: object
+      required:
+        - name
+        - config
+      properties:
+        name:
+          type: string
+        config:
+          $ref: "#/components/schemas/EnvironmentConfig"
+    UpdateEnvironmentRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        config:
+          $ref: "#/components/schemas/EnvironmentConfig"
+    DeletedResource:
+      type: object
+      required:
+        - id
+        - type
+      properties:
+        id:
+          type: string
+        type:
           type: string

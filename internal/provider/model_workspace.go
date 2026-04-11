@@ -2,7 +2,7 @@ package provider
 
 import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
-	"github.com/jianyuan/terraform-provider-anthropic/internal/apiclient"
+	"github.com/frank-bee/terraform-provider-anthropic/internal/apiclient"
 )
 
 type WorkspaceModel struct {

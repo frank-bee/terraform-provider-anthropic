@@ -7,7 +7,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-testing/knownvalue"
 	"github.com/hashicorp/terraform-plugin-testing/statecheck"
 	"github.com/hashicorp/terraform-plugin-testing/tfjsonpath"
-	"github.com/jianyuan/terraform-provider-anthropic/internal/acctest"
+	"github.com/frank-bee/terraform-provider-anthropic/internal/acctest"
 )
 
 func TestAccUsersDataSource(t *testing.T) {

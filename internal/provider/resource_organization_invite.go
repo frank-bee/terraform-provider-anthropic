@@ -12,7 +12,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/schema/validator"
-	"github.com/jianyuan/terraform-provider-anthropic/internal/apiclient"
+	"github.com/frank-bee/terraform-provider-anthropic/internal/apiclient"
 )
 
 func NewOrganizationInviteResource() resource.Resource {

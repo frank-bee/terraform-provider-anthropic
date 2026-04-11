@@ -1,4 +1,4 @@
-module github.com/jianyuan/terraform-provider-anthropic
+module github.com/frank-bee/terraform-provider-anthropic
 
 go 1.26.1
 
