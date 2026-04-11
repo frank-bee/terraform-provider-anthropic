@@ -94,23 +94,36 @@ func (p *AnthropicProvider) Configure(ctx context.Context, req provider.Configur
 	retryClient.Logger = nil
 	retryClient.RetryMax = 10
 
-	client, err := apiclient.NewClientWithResponses(
-		baseUrl,
-		apiclient.WithHTTPClient(retryClient.StandardClient()),
-		apiclient.WithRequestEditorFn(func(ctx context.Context, req *http.Request) error {
+	editors := []apiclient.RequestEditorFn{
+		func(ctx context.Context, req *http.Request) error {
 			req.Header.Set("anthropic-version", "2023-06-01")
 			req.Header.Set("anthropic-beta", "agent-api-2026-03-01")
 			req.Header.Set("x-api-key", apiKey)
 			return nil
-		}),
+		},
+	}
+
+	stdClient := retryClient.StandardClient()
+
+	client, err := apiclient.NewClientWithResponses(
+		baseUrl,
+		apiclient.WithHTTPClient(stdClient),
+		apiclient.WithRequestEditorFn(editors[0]),
 	)
 	if err != nil {
 		resp.Diagnostics.AddError("failed to create API client", err.Error())
 		return
 	}
 
-	resp.DataSourceData = client
-	resp.ResourceData = client
+	skillsClient := apiclient.NewSkillsClient(client, baseUrl, stdClient, editors)
+
+	clients := &ProviderClients{
+		API:    client,
+		Skills: skillsClient,
+	}
+
+	resp.DataSourceData = clients
+	resp.ResourceData = clients
 }
 
 func (p *AnthropicProvider) Resources(ctx context.Context) []func() resource.Resource {
@@ -118,6 +131,7 @@ func (p *AnthropicProvider) Resources(ctx context.Context) []func() resource.Res
 		NewAgentResource,
 		NewEnvironmentResource,
 		NewOrganizationInviteResource,
+		NewSkillResource,
 		NewWorkspaceMemberResource,
 		NewWorkspaceResource,
 	}
@@ -128,6 +142,7 @@ func (p *AnthropicProvider) DataSources(ctx context.Context) []func() datasource
 		NewAgentsDataSource,
 		NewEnvironmentsDataSource,
 		NewOrganizationInvitesDataSource,
+		NewSkillsDataSource,
 		NewUserDataSource,
 		NewUsersDataSource,
 		NewWorkspaceDataSource,
