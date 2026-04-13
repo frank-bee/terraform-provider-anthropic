@@ -37,7 +37,7 @@ type Agent struct {
 	Tools       *[]AgentTool       `json:"tools,omitempty"`
 	Type        string             `json:"type"`
 	UpdatedAt   *string            `json:"updated_at,omitempty"`
-	Version     int                `json:"version"`
+	Version     string             `json:"version"`
 }
 
 // AgentMcpServer defines model for AgentMcpServer.
@@ -160,7 +160,7 @@ type UpdateAgentRequest struct {
 	Skills      *[]AgentSkillRequest `json:"skills,omitempty"`
 	System      *string              `json:"system,omitempty"`
 	Tools       *[]AgentTool         `json:"tools,omitempty"`
-	Version     int                  `json:"version"`
+	Version     string               `json:"version"`
 }
 
 // UpdateEnvironmentRequest defines model for UpdateEnvironmentRequest.

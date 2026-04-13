@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"strconv"
 
 	"github.com/frank-bee/terraform-provider-anthropic/internal/apiclient"
 	"github.com/hashicorp/terraform-plugin-framework/path"
@@ -304,13 +303,8 @@ func (r *AgentResource) Update(ctx context.Context, req resource.UpdateRequest, 
 
 	name := data.Name.ValueString()
 	model := data.Model.ValueString()
-	versionInt, err := strconv.Atoi(state.Version.ValueString())
-	if err != nil {
-		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("invalid version %q in state: %s", state.Version.ValueString(), err))
-		return
-	}
 	body := apiclient.UpdateAgentJSONRequestBody{
-		Version: versionInt,
+		Version: state.Version.ValueString(),
 		Name:    &name,
 		Model:   &model,
 	}

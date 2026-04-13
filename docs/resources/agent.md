@@ -46,6 +46,47 @@ resource "anthropic_agent" "with_mcp" {
   }
 }
 
+# Agent that pins permission policies so unattended (fire-and-forget) sessions
+# don't stall on `requires_action`. By default the API returns
+# `permission_policy.type = "always_ask"` for each tool, which causes
+# unattended sessions to block waiting for human approval.
+resource "anthropic_agent" "with_permission_policy" {
+  name        = "unattended-agent"
+  model       = "claude-sonnet-4-5"
+  description = "Headless analyzer used in CI."
+
+  metadata = {
+    owner = "devops"
+    env   = "ci"
+  }
+
+  tools {
+    type = "agent_toolset_20260401"
+
+    default_config {
+      enabled = true
+      permission_policy {
+        type = "always_allow"
+      }
+    }
+  }
+
+  mcp_servers {
+    name = "internal-tools"
+    type = "url"
+    url  = "https://mcp.example.com/internal/mcp"
+
+    # Mirrors `default_config` onto the auto-generated `mcp_toolset` entry
+    # for this server so the same policy applies.
+    default_config {
+      enabled = true
+      permission_policy {
+        type = "always_allow"
+      }
+    }
+  }
+}
+
 # Agent with skills
 resource "anthropic_agent" "with_skills" {
   name  = "skilled-agent"
@@ -69,7 +110,9 @@ resource "anthropic_agent" "with_skills" {
 
 ### Optional
 
+- `description` (String) Human-readable description of the Agent.
 - `mcp_servers` (Block List) MCP servers available to the Agent. (see [below for nested schema](#nestedblock--mcp_servers))
+- `metadata` (Map of String) Arbitrary string key/value metadata attached to the Agent.
 - `skills` (Block List) Skills assigned to the Agent. (see [below for nested schema](#nestedblock--skills))
 - `system` (String) System prompt for the Agent.
 - `tools` (Block List) Tools available to the Agent. (see [below for nested schema](#nestedblock--tools))
@@ -88,6 +131,27 @@ Required:
 - `type` (String) Type of the MCP server (e.g. `url`).
 - `url` (String) URL of the MCP server.
 
+Optional:
+
+- `default_config` (Block, Optional) Default configuration applied to the auto-generated `mcp_toolset` entry for this server. (see [below for nested schema](#nestedblock--mcp_servers--default_config))
+
+<a id="nestedblock--mcp_servers--default_config"></a>
+### Nested Schema for `mcp_servers.default_config`
+
+Optional:
+
+- `enabled` (Boolean) Whether the tool is enabled by default.
+- `permission_policy` (Block, Optional) Permission policy applied to the tool by default. Common values: `always_allow`, `always_ask`. (see [below for nested schema](#nestedblock--mcp_servers--default_config--permission_policy))
+
+<a id="nestedblock--mcp_servers--default_config--permission_policy"></a>
+### Nested Schema for `mcp_servers.default_config.permission_policy`
+
+Optional:
+
+- `type` (String) Policy type (e.g. `always_allow`, `always_ask`).
+
+
+
 
 <a id="nestedblock--skills"></a>
 ### Nested Schema for `skills`
@@ -105,3 +169,22 @@ Required:
 Required:
 
 - `type` (String) Tool type (e.g. `agent_toolset_20260401`).
+
+Optional:
+
+- `default_config` (Block, Optional) Default configuration applied to this tool when instantiated in a session. (see [below for nested schema](#nestedblock--tools--default_config))
+
+<a id="nestedblock--tools--default_config"></a>
+### Nested Schema for `tools.default_config`
+
+Optional:
+
+- `enabled` (Boolean) Whether the tool is enabled by default.
+- `permission_policy` (Block, Optional) Permission policy applied to the tool by default. Common values: `always_allow`, `always_ask`. (see [below for nested schema](#nestedblock--tools--default_config--permission_policy))
+
+<a id="nestedblock--tools--default_config--permission_policy"></a>
+### Nested Schema for `tools.default_config.permission_policy`
+
+Optional:
+
+- `type` (String) Policy type (e.g. `always_allow`, `always_ask`).

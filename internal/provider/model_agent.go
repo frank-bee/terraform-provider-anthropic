@@ -3,7 +3,6 @@ package provider
 import (
 	"context"
 	"fmt"
-	"strconv"
 
 	"github.com/frank-bee/terraform-provider-anthropic/internal/apiclient"
 	"github.com/hashicorp/terraform-plugin-framework/types"
@@ -51,7 +50,7 @@ type SkillModel struct {
 
 func (m *AgentModel) Fill(a apiclient.Agent) error {
 	m.Id = types.StringValue(a.Id)
-	m.Version = types.StringValue(strconv.Itoa(a.Version))
+	m.Version = types.StringValue(a.Version)
 	m.Name = types.StringValue(a.Name)
 	m.Description = types.StringPointerValue(a.Description)
 	m.System = types.StringPointerValue(a.System)

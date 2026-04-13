@@ -97,7 +97,7 @@ func (p *AnthropicProvider) Configure(ctx context.Context, req provider.Configur
 	editors := []apiclient.RequestEditorFn{
 		func(ctx context.Context, req *http.Request) error {
 			req.Header.Set("anthropic-version", "2023-06-01")
-			req.Header.Set("anthropic-beta", "managed-agents-2026-04-01")
+			req.Header.Set("anthropic-beta", "agent-api-2026-03-01")
 			req.Header.Set("x-api-key", apiKey)
 			return nil
 		},

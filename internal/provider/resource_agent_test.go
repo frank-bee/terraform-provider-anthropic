@@ -196,6 +196,54 @@ resource "anthropic_agent" "test" {
 `, name)
 }
 
+// Regression test: tools[].default_config.permission_policy must round-trip
+// through the API. Without this, the API silently re-applies the default
+// `always_ask` policy on every TF apply, breaking unattended sessions.
+func TestAccAgentResource_withToolDefaultConfig(t *testing.T) {
+	rn := "anthropic_agent.test"
+	agentName := acctest.RandomWithPrefix("tf-agent")
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { acctest.PreCheckManagedAgents(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccAgentResourceConfig_withToolDefaultConfig(agentName),
+				ConfigStateChecks: []statecheck.StateCheck{
+					statecheck.ExpectKnownValue(rn, tfjsonpath.New("id"), knownvalue.NotNull()),
+					statecheck.ExpectKnownValue(rn, tfjsonpath.New("tools").AtSliceIndex(0).AtMapKey("default_config").AtMapKey("enabled"), knownvalue.Bool(true)),
+					statecheck.ExpectKnownValue(rn, tfjsonpath.New("tools").AtSliceIndex(0).AtMapKey("default_config").AtMapKey("permission_policy").AtMapKey("type"), knownvalue.StringExact("always_allow")),
+				},
+			},
+			{
+				ResourceName:      rn,
+				ImportState:       true,
+				ImportStateVerify: true,
+			},
+		},
+	})
+}
+
+func testAccAgentResourceConfig_withToolDefaultConfig(name string) string {
+	return fmt.Sprintf(`
+resource "anthropic_agent" "test" {
+	name  = %[1]q
+	model = "claude-sonnet-4-5"
+
+	tools {
+		type = "agent_toolset_20251212"
+
+		default_config {
+			enabled = true
+			permission_policy {
+				type = "always_allow"
+			}
+		}
+	}
+}
+`, name)
+}
+
 func testAccAgentResourceConfig_withSkill(agentName, skillName string) string {
 	return fmt.Sprintf(`
 resource "anthropic_skill" "test" {

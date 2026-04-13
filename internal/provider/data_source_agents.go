@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"strconv"
 
 	"github.com/frank-bee/terraform-provider-anthropic/internal/apiclient"
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
@@ -111,7 +110,7 @@ func (d *AgentsDataSource) Read(ctx context.Context, req datasource.ReadRequest,
 				Id:      types.StringValue(a.Id),
 				Name:    types.StringValue(a.Name),
 				Model:   model,
-				Version: types.StringValue(strconv.Itoa(a.Version)),
+				Version: types.StringValue(a.Version),
 			})
 		}
 
