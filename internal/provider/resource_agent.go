@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/frank-bee/terraform-provider-anthropic/internal/apiclient"
 	"github.com/hashicorp/terraform-plugin-framework/path"
@@ -11,6 +12,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/planmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
 func NewAgentResource() resource.Resource {
@@ -56,6 +58,16 @@ func (r *AgentResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				MarkdownDescription: "System prompt for the Agent.",
 				Optional:            true,
 			},
+			"description": schema.StringAttribute{
+				MarkdownDescription: "Human-readable description of the Agent.",
+				Optional:            true,
+			},
+			"metadata": schema.MapAttribute{
+				MarkdownDescription: "Arbitrary string key/value metadata attached to the Agent.",
+				Optional:            true,
+				Computed:            true,
+				ElementType:         types.StringType,
+			},
 		},
 
 		Blocks: map[string]schema.Block{
@@ -66,6 +78,28 @@ func (r *AgentResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 						"type": schema.StringAttribute{
 							MarkdownDescription: "Tool type (e.g. `agent_toolset_20260401`).",
 							Required:            true,
+						},
+					},
+					Blocks: map[string]schema.Block{
+						"default_config": schema.SingleNestedBlock{
+							MarkdownDescription: "Default configuration applied to this tool when instantiated in a session.",
+							Attributes: map[string]schema.Attribute{
+								"enabled": schema.BoolAttribute{
+									MarkdownDescription: "Whether the tool is enabled by default.",
+									Optional:            true,
+								},
+							},
+							Blocks: map[string]schema.Block{
+								"permission_policy": schema.SingleNestedBlock{
+									MarkdownDescription: "Permission policy applied to the tool by default. Common values: `always_allow`, `always_ask`.",
+									Attributes: map[string]schema.Attribute{
+										"type": schema.StringAttribute{
+											MarkdownDescription: "Policy type (e.g. `always_allow`, `always_ask`).",
+											Optional:            true,
+										},
+									},
+								},
+							},
 						},
 					},
 				},
@@ -85,6 +119,28 @@ func (r *AgentResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 						"url": schema.StringAttribute{
 							MarkdownDescription: "URL of the MCP server.",
 							Required:            true,
+						},
+					},
+					Blocks: map[string]schema.Block{
+						"default_config": schema.SingleNestedBlock{
+							MarkdownDescription: "Default configuration applied to the auto-generated `mcp_toolset` entry for this server.",
+							Attributes: map[string]schema.Attribute{
+								"enabled": schema.BoolAttribute{
+									MarkdownDescription: "Whether the tool is enabled by default.",
+									Optional:            true,
+								},
+							},
+							Blocks: map[string]schema.Block{
+								"permission_policy": schema.SingleNestedBlock{
+									MarkdownDescription: "Permission policy applied to the tool by default. Common values: `always_allow`, `always_ask`.",
+									Attributes: map[string]schema.Attribute{
+										"type": schema.StringAttribute{
+											MarkdownDescription: "Policy type (e.g. `always_allow`, `always_ask`).",
+											Optional:            true,
+										},
+									},
+								},
+							},
 						},
 					},
 				},
@@ -130,18 +186,20 @@ func (r *AgentResource) Create(ctx context.Context, req resource.CreateRequest, 
 		body.System = &system
 	}
 
+	if !data.Description.IsNull() {
+		desc := data.Description.ValueString()
+		body.Description = &desc
+	}
+
+	if md := mapFromTFMap(ctx, data.Metadata, &resp.Diagnostics); md != nil {
+		body.Metadata = md
+	}
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
 	if len(data.Tools) > 0 || len(data.McpServers) > 0 {
-		var tools []apiclient.AgentTool
-		for _, t := range data.Tools {
-			tools = append(tools, apiclient.AgentTool{Type: t.Type.ValueString()})
-		}
-		// Auto-add mcp_toolset entries for each MCP server
-		for _, s := range data.McpServers {
-			tools = append(tools, apiclient.AgentTool{
-				Type:          "mcp_toolset",
-				McpServerName: ptrTo(s.Name.ValueString()),
-			})
-		}
+		tools := buildAgentTools(data.Tools, data.McpServers)
 		body.Tools = &tools
 	}
 
@@ -246,8 +304,13 @@ func (r *AgentResource) Update(ctx context.Context, req resource.UpdateRequest, 
 
 	name := data.Name.ValueString()
 	model := data.Model.ValueString()
+	versionInt, err := strconv.Atoi(state.Version.ValueString())
+	if err != nil {
+		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("invalid version %q in state: %s", state.Version.ValueString(), err))
+		return
+	}
 	body := apiclient.UpdateAgentJSONRequestBody{
-		Version: state.Version.ValueString(),
+		Version: versionInt,
 		Name:    &name,
 		Model:   &model,
 	}
@@ -257,17 +320,19 @@ func (r *AgentResource) Update(ctx context.Context, req resource.UpdateRequest, 
 		body.System = &system
 	}
 
-	var tools []apiclient.AgentTool
-	for _, t := range data.Tools {
-		tools = append(tools, apiclient.AgentTool{Type: t.Type.ValueString()})
+	if !data.Description.IsNull() {
+		desc := data.Description.ValueString()
+		body.Description = &desc
 	}
-	// Auto-add mcp_toolset entries for each MCP server
-	for _, s := range data.McpServers {
-		tools = append(tools, apiclient.AgentTool{
-			Type:          "mcp_toolset",
-			McpServerName: ptrTo(s.Name.ValueString()),
-		})
+
+	if md := mapFromTFMap(ctx, data.Metadata, &resp.Diagnostics); md != nil {
+		body.Metadata = md
 	}
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
+	tools := buildAgentTools(data.Tools, data.McpServers)
 	body.Tools = &tools
 
 	servers := make([]apiclient.AgentMcpServer, len(data.McpServers))

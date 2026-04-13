@@ -732,6 +732,20 @@ components:
           type: string
         version:
           type: string
+    AgentToolPermissionPolicy:
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          type: string
+    AgentToolDefaultConfig:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+        permission_policy:
+          $ref: "#/components/schemas/AgentToolPermissionPolicy"
     AgentTool:
       type: object
       required:
@@ -741,6 +755,13 @@ components:
           type: string
         mcp_server_name:
           type: string
+        default_config:
+          $ref: "#/components/schemas/AgentToolDefaultConfig"
+        configs:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
     AgentMcpServer:
       type: object
       required:
@@ -767,16 +788,26 @@ components:
         type:
           type: string
         version:
-          type: string
+          type: integer
         name:
           type: string
-        model:
+        description:
           type: string
+          nullable: true
+        model:
+          $ref: "#/components/schemas/AgentModelConfig"
         system:
           type: string
           nullable: true
         status:
           type: string
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+        archived_at:
+          type: string
+          nullable: true
         created_at:
           type: string
         updated_at:
@@ -802,10 +833,16 @@ components:
       properties:
         name:
           type: string
+        description:
+          type: string
         model:
           type: string
         system:
           type: string
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
         tools:
           type: array
           items:
@@ -824,13 +861,19 @@ components:
         - version
       properties:
         version:
-          type: string
+          type: integer
         name:
+          type: string
+        description:
           type: string
         model:
           type: string
         system:
           type: string
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
         tools:
           type: array
           items:

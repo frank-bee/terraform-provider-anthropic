@@ -23,18 +23,21 @@ const (
 
 // Agent defines model for Agent.
 type Agent struct {
-	CreatedAt  *string           `json:"created_at,omitempty"`
-	Id         string            `json:"id"`
-	McpServers *[]AgentMcpServer `json:"mcp_servers,omitempty"`
-	Model      *string           `json:"model,omitempty"`
-	Name       string            `json:"name"`
-	Skills     *[]AgentSkill     `json:"skills,omitempty"`
-	Status     *string           `json:"status,omitempty"`
-	System     *string           `json:"system,omitempty"`
-	Tools      *[]AgentTool      `json:"tools,omitempty"`
-	Type       string            `json:"type"`
-	UpdatedAt  *string           `json:"updated_at,omitempty"`
-	Version    string            `json:"version"`
+	ArchivedAt  *string            `json:"archived_at,omitempty"`
+	CreatedAt   *string            `json:"created_at,omitempty"`
+	Description *string            `json:"description,omitempty"`
+	Id          string             `json:"id"`
+	McpServers  *[]AgentMcpServer  `json:"mcp_servers,omitempty"`
+	Metadata    *map[string]string `json:"metadata,omitempty"`
+	Model       *AgentModelConfig  `json:"model,omitempty"`
+	Name        string             `json:"name"`
+	Skills      *[]AgentSkill      `json:"skills,omitempty"`
+	Status      *string            `json:"status,omitempty"`
+	System      *string            `json:"system,omitempty"`
+	Tools       *[]AgentTool       `json:"tools,omitempty"`
+	Type        string             `json:"type"`
+	UpdatedAt   *string            `json:"updated_at,omitempty"`
+	Version     int                `json:"version"`
 }
 
 // AgentMcpServer defines model for AgentMcpServer.
@@ -42,6 +45,12 @@ type AgentMcpServer struct {
 	Name string `json:"name"`
 	Type string `json:"type"`
 	Url  string `json:"url"`
+}
+
+// AgentModelConfig defines model for AgentModelConfig.
+type AgentModelConfig struct {
+	Id    string  `json:"id"`
+	Speed *string `json:"speed,omitempty"`
 }
 
 // AgentSkill defines model for AgentSkill.
@@ -60,18 +69,33 @@ type AgentSkillRequest struct {
 
 // AgentTool defines model for AgentTool.
 type AgentTool struct {
-	McpServerName *string `json:"mcp_server_name,omitempty"`
-	Type          string  `json:"type"`
+	Configs       *[]map[string]interface{} `json:"configs,omitempty"`
+	DefaultConfig *AgentToolDefaultConfig   `json:"default_config,omitempty"`
+	McpServerName *string                   `json:"mcp_server_name,omitempty"`
+	Type          string                    `json:"type"`
+}
+
+// AgentToolDefaultConfig defines model for AgentToolDefaultConfig.
+type AgentToolDefaultConfig struct {
+	Enabled          *bool                      `json:"enabled,omitempty"`
+	PermissionPolicy *AgentToolPermissionPolicy `json:"permission_policy,omitempty"`
+}
+
+// AgentToolPermissionPolicy defines model for AgentToolPermissionPolicy.
+type AgentToolPermissionPolicy struct {
+	Type string `json:"type"`
 }
 
 // CreateAgentRequest defines model for CreateAgentRequest.
 type CreateAgentRequest struct {
-	McpServers *[]AgentMcpServer    `json:"mcp_servers,omitempty"`
-	Model      string               `json:"model"`
-	Name       string               `json:"name"`
-	Skills     *[]AgentSkillRequest `json:"skills,omitempty"`
-	System     *string              `json:"system,omitempty"`
-	Tools      *[]AgentTool         `json:"tools,omitempty"`
+	Description *string              `json:"description,omitempty"`
+	McpServers  *[]AgentMcpServer    `json:"mcp_servers,omitempty"`
+	Metadata    *map[string]string   `json:"metadata,omitempty"`
+	Model       string               `json:"model"`
+	Name        string               `json:"name"`
+	Skills      *[]AgentSkillRequest `json:"skills,omitempty"`
+	System      *string              `json:"system,omitempty"`
+	Tools       *[]AgentTool         `json:"tools,omitempty"`
 }
 
 // CreateEnvironmentRequest defines model for CreateEnvironmentRequest.
@@ -128,13 +152,15 @@ type Invite struct {
 
 // UpdateAgentRequest defines model for UpdateAgentRequest.
 type UpdateAgentRequest struct {
-	McpServers *[]AgentMcpServer    `json:"mcp_servers,omitempty"`
-	Model      *string              `json:"model,omitempty"`
-	Name       *string              `json:"name,omitempty"`
-	Skills     *[]AgentSkillRequest `json:"skills,omitempty"`
-	System     *string              `json:"system,omitempty"`
-	Tools      *[]AgentTool         `json:"tools,omitempty"`
-	Version    string               `json:"version"`
+	Description *string              `json:"description,omitempty"`
+	McpServers  *[]AgentMcpServer    `json:"mcp_servers,omitempty"`
+	Metadata    *map[string]string   `json:"metadata,omitempty"`
+	Model       *string              `json:"model,omitempty"`
+	Name        *string              `json:"name,omitempty"`
+	Skills      *[]AgentSkillRequest `json:"skills,omitempty"`
+	System      *string              `json:"system,omitempty"`
+	Tools       *[]AgentTool         `json:"tools,omitempty"`
+	Version     int                  `json:"version"`
 }
 
 // UpdateEnvironmentRequest defines model for UpdateEnvironmentRequest.

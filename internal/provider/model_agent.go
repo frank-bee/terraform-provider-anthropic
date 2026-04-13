@@ -1,29 +1,46 @@
 package provider
 
 import (
+	"context"
+	"fmt"
+	"strconv"
+
 	"github.com/frank-bee/terraform-provider-anthropic/internal/apiclient"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
 type AgentModel struct {
-	Id         types.String     `tfsdk:"id"`
-	Version    types.String     `tfsdk:"version"`
-	Name       types.String     `tfsdk:"name"`
-	System     types.String     `tfsdk:"system"`
-	Model      types.String     `tfsdk:"model"`
-	Tools      []AgentToolModel `tfsdk:"tools"`
-	McpServers []McpServerModel `tfsdk:"mcp_servers"`
-	Skills     []SkillModel     `tfsdk:"skills"`
+	Id          types.String      `tfsdk:"id"`
+	Version     types.String      `tfsdk:"version"`
+	Name        types.String      `tfsdk:"name"`
+	Description types.String      `tfsdk:"description"`
+	System      types.String      `tfsdk:"system"`
+	Model       types.String      `tfsdk:"model"`
+	Metadata    types.Map         `tfsdk:"metadata"`
+	Tools       []AgentToolModel  `tfsdk:"tools"`
+	McpServers  []McpServerModel  `tfsdk:"mcp_servers"`
+	Skills      []SkillModel      `tfsdk:"skills"`
 }
 
 type AgentToolModel struct {
+	Type          types.String                  `tfsdk:"type"`
+	DefaultConfig *AgentToolDefaultConfigModel  `tfsdk:"default_config"`
+}
+
+type AgentToolDefaultConfigModel struct {
+	Enabled          types.Bool                             `tfsdk:"enabled"`
+	PermissionPolicy *AgentToolPermissionPolicyModel        `tfsdk:"permission_policy"`
+}
+
+type AgentToolPermissionPolicyModel struct {
 	Type types.String `tfsdk:"type"`
 }
 
 type McpServerModel struct {
-	Name types.String `tfsdk:"name"`
-	Type types.String `tfsdk:"type"`
-	Url  types.String `tfsdk:"url"`
+	Name          types.String                 `tfsdk:"name"`
+	Type          types.String                 `tfsdk:"type"`
+	Url           types.String                 `tfsdk:"url"`
+	DefaultConfig *AgentToolDefaultConfigModel `tfsdk:"default_config"`
 }
 
 type SkillModel struct {
@@ -34,10 +51,30 @@ type SkillModel struct {
 
 func (m *AgentModel) Fill(a apiclient.Agent) error {
 	m.Id = types.StringValue(a.Id)
-	m.Version = types.StringValue(a.Version)
+	m.Version = types.StringValue(strconv.Itoa(a.Version))
 	m.Name = types.StringValue(a.Name)
+	m.Description = types.StringPointerValue(a.Description)
 	m.System = types.StringPointerValue(a.System)
-	m.Model = types.StringPointerValue(a.Model)
+
+	if a.Model != nil {
+		m.Model = types.StringValue(a.Model.Id)
+	} else {
+		m.Model = types.StringNull()
+	}
+
+	if a.Metadata != nil && len(*a.Metadata) > 0 {
+		elems := make(map[string]string, len(*a.Metadata))
+		for k, v := range *a.Metadata {
+			elems[k] = v
+		}
+		mv, diags := types.MapValueFrom(context.Background(), types.StringType, elems)
+		if diags.HasError() {
+			return fmt.Errorf("failed to build metadata map: %s", diags)
+		}
+		m.Metadata = mv
+	} else {
+		m.Metadata = types.MapNull(types.StringType)
+	}
 
 	if a.Tools != nil {
 		var tools []AgentToolModel
@@ -46,9 +83,21 @@ func (m *AgentModel) Fill(a apiclient.Agent) error {
 			if t.Type == "mcp_toolset" {
 				continue
 			}
-			tools = append(tools, AgentToolModel{
+			tm := AgentToolModel{
 				Type: types.StringValue(t.Type),
-			})
+			}
+			if t.DefaultConfig != nil {
+				dc := &AgentToolDefaultConfigModel{
+					Enabled: types.BoolPointerValue(t.DefaultConfig.Enabled),
+				}
+				if t.DefaultConfig.PermissionPolicy != nil {
+					dc.PermissionPolicy = &AgentToolPermissionPolicyModel{
+						Type: types.StringValue(t.DefaultConfig.PermissionPolicy.Type),
+					}
+				}
+				tm.DefaultConfig = dc
+			}
+			tools = append(tools, tm)
 		}
 		if tools == nil {
 			tools = []AgentToolModel{}
@@ -58,13 +107,34 @@ func (m *AgentModel) Fill(a apiclient.Agent) error {
 		m.Tools = []AgentToolModel{}
 	}
 
+	// Index mcp_toolset default_configs by server name so we can surface
+	// them on the corresponding mcp_servers entry.
+	mcpToolsetCfg := map[string]*AgentToolDefaultConfigModel{}
+	if a.Tools != nil {
+		for _, t := range *a.Tools {
+			if t.Type != "mcp_toolset" || t.McpServerName == nil || t.DefaultConfig == nil {
+				continue
+			}
+			dc := &AgentToolDefaultConfigModel{
+				Enabled: types.BoolPointerValue(t.DefaultConfig.Enabled),
+			}
+			if t.DefaultConfig.PermissionPolicy != nil {
+				dc.PermissionPolicy = &AgentToolPermissionPolicyModel{
+					Type: types.StringValue(t.DefaultConfig.PermissionPolicy.Type),
+				}
+			}
+			mcpToolsetCfg[*t.McpServerName] = dc
+		}
+	}
+
 	if a.McpServers != nil {
 		servers := make([]McpServerModel, len(*a.McpServers))
 		for i, s := range *a.McpServers {
 			servers[i] = McpServerModel{
-				Name: types.StringValue(s.Name),
-				Type: types.StringValue(s.Type),
-				Url:  types.StringValue(s.Url),
+				Name:          types.StringValue(s.Name),
+				Type:          types.StringValue(s.Type),
+				Url:           types.StringValue(s.Url),
+				DefaultConfig: mcpToolsetCfg[s.Name],
 			}
 		}
 		m.McpServers = servers
