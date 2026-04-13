@@ -893,6 +893,45 @@ components:
       properties:
         type:
           type: string
+        allow_mcp_servers:
+          type: boolean
+        allow_package_managers:
+          type: boolean
+        allowed_hosts:
+          type: array
+          items:
+            type: string
+    EnvironmentPackages:
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          type: string
+        apt:
+          type: array
+          items:
+            type: string
+        pip:
+          type: array
+          items:
+            type: string
+        npm:
+          type: array
+          items:
+            type: string
+        cargo:
+          type: array
+          items:
+            type: string
+        gem:
+          type: array
+          items:
+            type: string
+        go:
+          type: array
+          items:
+            type: string
     EnvironmentConfig:
       type: object
       required:
@@ -904,6 +943,14 @@ components:
         networking:
           $ref: "#/components/schemas/EnvironmentNetworking"
         packages:
+          $ref: "#/components/schemas/EnvironmentPackages"
+        init_script:
+          description: |
+            Read-only. Currently returned by GET but rejected on POST/PATCH.
+          type: string
+        environment:
+          description: |
+            Read-only. Currently returned by GET but rejected on POST/PATCH.
           type: object
           additionalProperties:
             type: string
@@ -921,6 +968,12 @@ components:
           type: string
         name:
           type: string
+        description:
+          type: string
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
         config:
           $ref: "#/components/schemas/EnvironmentConfig"
         created_at:
@@ -935,6 +988,12 @@ components:
       properties:
         name:
           type: string
+        description:
+          type: string
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
         config:
           $ref: "#/components/schemas/EnvironmentConfig"
     UpdateEnvironmentRequest:
@@ -942,6 +1001,12 @@ components:
       properties:
         name:
           type: string
+        description:
+          type: string
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
         config:
           $ref: "#/components/schemas/EnvironmentConfig"
     DeletedResource:
