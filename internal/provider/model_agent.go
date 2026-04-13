@@ -9,26 +9,26 @@ import (
 )
 
 type AgentModel struct {
-	Id          types.String      `tfsdk:"id"`
-	Version     types.String      `tfsdk:"version"`
-	Name        types.String      `tfsdk:"name"`
-	Description types.String      `tfsdk:"description"`
-	System      types.String      `tfsdk:"system"`
-	Model       types.String      `tfsdk:"model"`
-	Metadata    types.Map         `tfsdk:"metadata"`
-	Tools       []AgentToolModel  `tfsdk:"tools"`
-	McpServers  []McpServerModel  `tfsdk:"mcp_servers"`
-	Skills      []SkillModel      `tfsdk:"skills"`
+	Id          types.String     `tfsdk:"id"`
+	Version     types.String     `tfsdk:"version"`
+	Name        types.String     `tfsdk:"name"`
+	Description types.String     `tfsdk:"description"`
+	System      types.String     `tfsdk:"system"`
+	Model       types.String     `tfsdk:"model"`
+	Metadata    types.Map        `tfsdk:"metadata"`
+	Tools       []AgentToolModel `tfsdk:"tools"`
+	McpServers  []McpServerModel `tfsdk:"mcp_servers"`
+	Skills      []SkillModel     `tfsdk:"skills"`
 }
 
 type AgentToolModel struct {
-	Type          types.String                  `tfsdk:"type"`
-	DefaultConfig *AgentToolDefaultConfigModel  `tfsdk:"default_config"`
+	Type          types.String                 `tfsdk:"type"`
+	DefaultConfig *AgentToolDefaultConfigModel `tfsdk:"default_config"`
 }
 
 type AgentToolDefaultConfigModel struct {
-	Enabled          types.Bool                             `tfsdk:"enabled"`
-	PermissionPolicy *AgentToolPermissionPolicyModel        `tfsdk:"permission_policy"`
+	Enabled          types.Bool                      `tfsdk:"enabled"`
+	PermissionPolicy *AgentToolPermissionPolicyModel `tfsdk:"permission_policy"`
 }
 
 type AgentToolPermissionPolicyModel struct {
