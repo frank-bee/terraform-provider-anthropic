@@ -13,19 +13,31 @@ Manages an Anthropic Managed Agent Environment.
 ## Example Usage
 
 ```terraform
-# Basic environment with unrestricted networking
+# Minimal environment with unrestricted networking.
 resource "anthropic_environment" "basic" {
   name            = "dev-environment"
   networking_type = "unrestricted"
 }
 
-# Restricted environment with packages
-resource "anthropic_environment" "with_packages" {
-  name            = "python-env"
-  networking_type = "restricted"
-  packages = {
-    "python" = "3.12"
-    "node"   = "20"
+# Environment with apt packages (installed when the session boots).
+resource "anthropic_environment" "with_apt" {
+  name            = "gh-tools"
+  networking_type = "unrestricted"
+  apt_packages    = ["gh", "jq"]
+}
+
+# Limited-networking environment that can only reach a pinned host list and
+# package-manager upstreams.
+resource "anthropic_environment" "limited" {
+  name                   = "ci-runner"
+  networking_type        = "limited"
+  allow_package_managers = true
+  allowed_hosts          = ["api.github.com", "github.com"]
+  apt_packages           = ["gh"]
+
+  description = "Used by the CI failure-analysis agent"
+  metadata = {
+    owner = "sw-devops"
   }
 }
 ```
@@ -36,15 +48,27 @@ resource "anthropic_environment" "with_packages" {
 ### Required
 
 - `name` (String) Name of the Environment.
-- `networking_type` (String) Networking type. One of `unrestricted` or `restricted`.
+- `networking_type` (String) Networking type. One of `unrestricted` or `limited`.
 
 ### Optional
 
+- `allow_mcp_servers` (Boolean) Only meaningful when `networking_type = "limited"`. Allow the agent session to talk to MCP servers.
+- `allow_package_managers` (Boolean) Only meaningful when `networking_type = "limited"`. Allow package managers (apt, pip, npm, ...) to reach their upstream registries during init.
+- `allowed_hosts` (List of String) Only meaningful when `networking_type = "limited"`. Additional hostnames the agent session is allowed to reach.
+- `apt_packages` (List of String) apt packages to install in the environment.
+- `cargo_packages` (List of String) cargo packages to install in the environment.
 - `config_type` (String) Configuration type. Currently only `cloud` is supported.
-- `packages` (Map of String) Package versions to install (e.g. `{"python" = "3.12", "node" = "20"}`).
+- `description` (String) Free-form description of the Environment.
+- `gem_packages` (List of String) gem packages to install in the environment.
+- `go_packages` (List of String) go packages to install in the environment.
+- `metadata` (Map of String) Free-form string metadata attached to the Environment.
+- `npm_packages` (List of String) npm packages to install in the environment.
+- `pip_packages` (List of String) pip packages to install in the environment.
 
 ### Read-Only
 
 - `created_at` (String) RFC 3339 datetime string indicating when the Environment was created.
+- `environment` (Map of String, Sensitive) Read-only. Environment variables baked into every session. Currently cannot be set via API — use the Anthropic dashboard. Treated as sensitive.
 - `id` (String) ID of the Environment.
+- `init_script` (String) Read-only. Shell script executed when each session boots. Currently cannot be set via API — use the Anthropic dashboard.
 - `updated_at` (String) RFC 3339 datetime string indicating when the Environment was last updated.

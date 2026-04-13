@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/frank-bee/terraform-provider-anthropic/internal/apiclient"
+	"github.com/hashicorp/terraform-plugin-framework/diag"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-framework/resource"
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema"
@@ -14,6 +15,14 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/resource/schema/stringplanmodifier"
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
+
+// withEnvironmentsBeta overrides the anthropic-beta header for /v1/environments
+// requests. The provider-level editor sets agent-api-2026-03-01, but the
+// environments endpoint lives behind managed-agents-2026-04-01.
+func withEnvironmentsBeta(_ context.Context, req *http.Request) error {
+	req.Header.Set("anthropic-beta", "managed-agents-2026-04-01")
+	return nil
+}
 
 func NewEnvironmentResource() resource.Resource {
 	return &EnvironmentResource{}
@@ -31,6 +40,14 @@ func (r *EnvironmentResource) Metadata(ctx context.Context, req resource.Metadat
 }
 
 func (r *EnvironmentResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
+	pkgListAttr := func(manager string) schema.Attribute {
+		return schema.ListAttribute{
+			MarkdownDescription: fmt.Sprintf("%s packages to install in the environment.", manager),
+			Optional:            true,
+			ElementType:         types.StringType,
+		}
+	}
+
 	resp.Schema = schema.Schema{
 		MarkdownDescription: "Manages an Anthropic Managed Agent Environment.",
 
@@ -46,6 +63,15 @@ func (r *EnvironmentResource) Schema(ctx context.Context, req resource.SchemaReq
 				MarkdownDescription: "Name of the Environment.",
 				Required:            true,
 			},
+			"description": schema.StringAttribute{
+				MarkdownDescription: "Free-form description of the Environment.",
+				Optional:            true,
+			},
+			"metadata": schema.MapAttribute{
+				MarkdownDescription: "Free-form string metadata attached to the Environment.",
+				Optional:            true,
+				ElementType:         types.StringType,
+			},
 			"config_type": schema.StringAttribute{
 				MarkdownDescription: "Configuration type. Currently only `cloud` is supported.",
 				Optional:            true,
@@ -53,13 +79,39 @@ func (r *EnvironmentResource) Schema(ctx context.Context, req resource.SchemaReq
 				Default:             stringdefault.StaticString("cloud"),
 			},
 			"networking_type": schema.StringAttribute{
-				MarkdownDescription: "Networking type. One of `unrestricted` or `restricted`.",
+				MarkdownDescription: "Networking type. One of `unrestricted` or `limited`.",
 				Required:            true,
 			},
-			"packages": schema.MapAttribute{
-				MarkdownDescription: "Package versions to install (e.g. `{\"python\" = \"3.12\", \"node\" = \"20\"}`).",
+			"allow_mcp_servers": schema.BoolAttribute{
+				MarkdownDescription: "Only meaningful when `networking_type = \"limited\"`. Allow the agent session to talk to MCP servers.",
+				Optional:            true,
+				Computed:            true,
+			},
+			"allow_package_managers": schema.BoolAttribute{
+				MarkdownDescription: "Only meaningful when `networking_type = \"limited\"`. Allow package managers (apt, pip, npm, ...) to reach their upstream registries during init.",
+				Optional:            true,
+				Computed:            true,
+			},
+			"allowed_hosts": schema.ListAttribute{
+				MarkdownDescription: "Only meaningful when `networking_type = \"limited\"`. Additional hostnames the agent session is allowed to reach.",
 				Optional:            true,
 				ElementType:         types.StringType,
+			},
+			"apt_packages":   pkgListAttr("apt"),
+			"pip_packages":   pkgListAttr("pip"),
+			"npm_packages":   pkgListAttr("npm"),
+			"cargo_packages": pkgListAttr("cargo"),
+			"gem_packages":   pkgListAttr("gem"),
+			"go_packages":    pkgListAttr("go"),
+			"init_script": schema.StringAttribute{
+				MarkdownDescription: "Read-only. Shell script executed when each session boots. Currently cannot be set via API — use the Anthropic dashboard.",
+				Computed:            true,
+			},
+			"environment": schema.MapAttribute{
+				MarkdownDescription: "Read-only. Environment variables baked into every session. Currently cannot be set via API — use the Anthropic dashboard. Treated as sensitive.",
+				Computed:            true,
+				ElementType:         types.StringType,
+				Sensitive:           true,
 			},
 			"created_at": schema.StringAttribute{
 				MarkdownDescription: "RFC 3339 datetime string indicating when the Environment was created.",
@@ -73,6 +125,90 @@ func (r *EnvironmentResource) Schema(ctx context.Context, req resource.SchemaReq
 	}
 }
 
+// buildConfig turns the plan data into an EnvironmentConfig for Create/Update.
+// Returns ok=false if the plan couldn't be decoded — the caller has already
+// appended to resp.Diagnostics.
+func (r *EnvironmentResource) buildConfig(ctx context.Context, data *EnvironmentModel, diags *diag.Diagnostics) apiclient.EnvironmentConfig {
+	config := apiclient.EnvironmentConfig{
+		Type: data.ConfigType.ValueString(),
+		Networking: apiclient.EnvironmentNetworking{
+			Type: data.NetworkingType.ValueString(),
+		},
+	}
+
+	// networking: limited-only fields. The API rejects them for unrestricted,
+	// so only send them when the user set them explicitly.
+	if !data.AllowMcpServers.IsNull() && !data.AllowMcpServers.IsUnknown() {
+		b := data.AllowMcpServers.ValueBool()
+		config.Networking.AllowMcpServers = &b
+	}
+	if !data.AllowPackageManagers.IsNull() && !data.AllowPackageManagers.IsUnknown() {
+		b := data.AllowPackageManagers.ValueBool()
+		config.Networking.AllowPackageManagers = &b
+	}
+	if !data.AllowedHosts.IsNull() && !data.AllowedHosts.IsUnknown() {
+		var hosts []string
+		diags.Append(data.AllowedHosts.ElementsAs(ctx, &hosts, false)...)
+		if diags.HasError() {
+			return config
+		}
+		config.Networking.AllowedHosts = &hosts
+	}
+
+	packages := apiclient.EnvironmentPackages{Type: "packages"}
+	hasPackages := false
+
+	for _, p := range []struct {
+		field *types.List
+		dst   **[]string
+	}{
+		{&data.AptPackages, &packages.Apt},
+		{&data.PipPackages, &packages.Pip},
+		{&data.NpmPackages, &packages.Npm},
+		{&data.CargoPackages, &packages.Cargo},
+		{&data.GemPackages, &packages.Gem},
+		{&data.GoPackages, &packages.Go},
+	} {
+		if p.field.IsNull() || p.field.IsUnknown() {
+			continue
+		}
+		var vals []string
+		diags.Append(p.field.ElementsAs(ctx, &vals, false)...)
+		if diags.HasError() {
+			return config
+		}
+		*p.dst = &vals
+		hasPackages = true
+	}
+
+	if hasPackages {
+		config.Packages = &packages
+	}
+
+	return config
+}
+
+// buildTopLevelFields pulls description + metadata from the plan model.
+func buildTopLevelFields(ctx context.Context, data *EnvironmentModel, diags *diag.Diagnostics) (*string, *map[string]string) {
+	var desc *string
+	if !data.Description.IsNull() && !data.Description.IsUnknown() {
+		s := data.Description.ValueString()
+		desc = &s
+	}
+
+	var meta *map[string]string
+	if !data.Metadata.IsNull() && !data.Metadata.IsUnknown() {
+		m := make(map[string]string)
+		diags.Append(data.Metadata.ElementsAs(ctx, &m, false)...)
+		if diags.HasError() {
+			return desc, nil
+		}
+		meta = &m
+	}
+
+	return desc, meta
+}
+
 func (r *EnvironmentResource) Create(ctx context.Context, req resource.CreateRequest, resp *resource.CreateResponse) {
 	var data EnvironmentModel
 
@@ -81,26 +217,20 @@ func (r *EnvironmentResource) Create(ctx context.Context, req resource.CreateReq
 		return
 	}
 
+	config := r.buildConfig(ctx, &data, &resp.Diagnostics)
+	desc, meta := buildTopLevelFields(ctx, &data, &resp.Diagnostics)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
 	body := apiclient.CreateEnvironmentJSONRequestBody{
-		Name: data.Name.ValueString(),
-		Config: apiclient.EnvironmentConfig{
-			Type: data.ConfigType.ValueString(),
-			Networking: apiclient.EnvironmentNetworking{
-				Type: data.NetworkingType.ValueString(),
-			},
-		},
+		Name:        data.Name.ValueString(),
+		Config:      config,
+		Description: desc,
+		Metadata:    meta,
 	}
 
-	if !data.Packages.IsNull() && !data.Packages.IsUnknown() {
-		packages := make(map[string]string)
-		resp.Diagnostics.Append(data.Packages.ElementsAs(ctx, &packages, false)...)
-		if resp.Diagnostics.HasError() {
-			return
-		}
-		body.Config.Packages = &packages
-	}
-
-	httpResp, err := r.client.CreateEnvironmentWithResponse(ctx, body)
+	httpResp, err := r.client.CreateEnvironmentWithResponse(ctx, body, withEnvironmentsBeta)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to create environment, got error: %s", err))
 		return
@@ -132,7 +262,7 @@ func (r *EnvironmentResource) Read(ctx context.Context, req resource.ReadRequest
 		return
 	}
 
-	httpResp, err := r.client.GetEnvironmentWithResponse(ctx, data.Id.ValueString())
+	httpResp, err := r.client.GetEnvironmentWithResponse(ctx, data.Id.ValueString(), withEnvironmentsBeta)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to read environment, got error: %s", err))
 		return
@@ -169,29 +299,21 @@ func (r *EnvironmentResource) Update(ctx context.Context, req resource.UpdateReq
 		return
 	}
 
+	config := r.buildConfig(ctx, &data, &resp.Diagnostics)
+	desc, meta := buildTopLevelFields(ctx, &data, &resp.Diagnostics)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+
 	name := data.Name.ValueString()
-	config := apiclient.EnvironmentConfig{
-		Type: data.ConfigType.ValueString(),
-		Networking: apiclient.EnvironmentNetworking{
-			Type: data.NetworkingType.ValueString(),
-		},
-	}
-
-	if !data.Packages.IsNull() && !data.Packages.IsUnknown() {
-		packages := make(map[string]string)
-		resp.Diagnostics.Append(data.Packages.ElementsAs(ctx, &packages, false)...)
-		if resp.Diagnostics.HasError() {
-			return
-		}
-		config.Packages = &packages
-	}
-
 	body := apiclient.UpdateEnvironmentJSONRequestBody{
-		Name:   &name,
-		Config: &config,
+		Name:        &name,
+		Config:      &config,
+		Description: desc,
+		Metadata:    meta,
 	}
 
-	httpResp, err := r.client.UpdateEnvironmentWithResponse(ctx, data.Id.ValueString(), body)
+	httpResp, err := r.client.UpdateEnvironmentWithResponse(ctx, data.Id.ValueString(), body, withEnvironmentsBeta)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to update environment, got error: %s", err))
 		return
@@ -223,7 +345,7 @@ func (r *EnvironmentResource) Delete(ctx context.Context, req resource.DeleteReq
 		return
 	}
 
-	httpResp, err := r.client.DeleteEnvironmentWithResponse(ctx, data.Id.ValueString())
+	httpResp, err := r.client.DeleteEnvironmentWithResponse(ctx, data.Id.ValueString(), withEnvironmentsBeta)
 	if err != nil {
 		resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to delete environment, got error: %s", err))
 		return

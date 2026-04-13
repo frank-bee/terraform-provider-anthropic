@@ -25,7 +25,7 @@ func init() {
 			params := &apiclient.ListEnvironmentsParams{}
 
 			for {
-				httpResp, err := acctest.SharedClient.ListEnvironmentsWithResponse(ctx, params)
+				httpResp, err := acctest.SharedClient.ListEnvironmentsWithResponse(ctx, params, withEnvironmentsBeta)
 				if err != nil {
 					return fmt.Errorf("unable to list environments: %s", err)
 				}
@@ -45,7 +45,7 @@ func init() {
 
 					log.Printf("[INFO] Destroying environment %s", env.Id)
 
-					_, err := acctest.SharedClient.DeleteEnvironmentWithResponse(ctx, env.Id)
+					_, err := acctest.SharedClient.DeleteEnvironmentWithResponse(ctx, env.Id, withEnvironmentsBeta)
 					if err != nil {
 						log.Printf("[ERROR] Unable to delete environment %s: %s", env.Id, err)
 						continue
@@ -65,6 +65,8 @@ func init() {
 	})
 }
 
+// TestAccEnvironmentResource_basic covers the happy path: create, import,
+// update name. Exercises only the minimal required attributes.
 func TestAccEnvironmentResource_basic(t *testing.T) {
 	rn := "anthropic_environment.test"
 	envName := acctest.RandomWithPrefix("tf-env")
@@ -98,7 +100,9 @@ func TestAccEnvironmentResource_basic(t *testing.T) {
 	})
 }
 
-func TestAccEnvironmentResource_restricted(t *testing.T) {
+// TestAccEnvironmentResource_descriptionAndMetadata covers the top-level
+// description + metadata attributes.
+func TestAccEnvironmentResource_descriptionAndMetadata(t *testing.T) {
 	rn := "anthropic_environment.test"
 	envName := acctest.RandomWithPrefix("tf-env")
 
@@ -107,17 +111,26 @@ func TestAccEnvironmentResource_restricted(t *testing.T) {
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccEnvironmentResourceConfig_restricted(envName),
+				Config: testAccEnvironmentResourceConfig_descAndMeta(envName),
 				ConfigStateChecks: []statecheck.StateCheck{
-					statecheck.ExpectKnownValue(rn, tfjsonpath.New("id"), knownvalue.NotNull()),
-					statecheck.ExpectKnownValue(rn, tfjsonpath.New("networking_type"), knownvalue.StringExact("restricted")),
+					statecheck.ExpectKnownValue(rn, tfjsonpath.New("description"),
+						knownvalue.StringExact("created-by-acceptance-test")),
+					statecheck.ExpectKnownValue(rn, tfjsonpath.New("metadata").AtMapKey("owner"),
+						knownvalue.StringExact("tf-test")),
 				},
+			},
+			{
+				ResourceName:      rn,
+				ImportState:       true,
+				ImportStateVerify: true,
 			},
 		},
 	})
 }
 
-func TestAccEnvironmentResource_withPackages(t *testing.T) {
+// TestAccEnvironmentResource_limited covers networking.type = "limited"
+// with allow_package_managers + allowed_hosts.
+func TestAccEnvironmentResource_limited(t *testing.T) {
 	rn := "anthropic_environment.test"
 	envName := acctest.RandomWithPrefix("tf-env")
 
@@ -126,11 +139,54 @@ func TestAccEnvironmentResource_withPackages(t *testing.T) {
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccEnvironmentResourceConfig_withPackages(envName),
+				Config: testAccEnvironmentResourceConfig_limited(envName),
+				ConfigStateChecks: []statecheck.StateCheck{
+					statecheck.ExpectKnownValue(rn, tfjsonpath.New("networking_type"),
+						knownvalue.StringExact("limited")),
+					statecheck.ExpectKnownValue(rn, tfjsonpath.New("allow_package_managers"),
+						knownvalue.Bool(true)),
+					statecheck.ExpectKnownValue(rn, tfjsonpath.New("allowed_hosts"),
+						knownvalue.ListExact([]knownvalue.Check{
+							knownvalue.StringExact("api.github.com"),
+							knownvalue.StringExact("github.com"),
+						})),
+				},
+			},
+			{
+				ResourceName:      rn,
+				ImportState:       true,
+				ImportStateVerify: true,
+			},
+		},
+	})
+}
+
+// TestAccEnvironmentResource_withAptPackages covers the packages per-manager
+// lists. Only apt is exercised against the live API to keep the test cheap —
+// the Fill() code path for all managers is covered by unit tests.
+func TestAccEnvironmentResource_withAptPackages(t *testing.T) {
+	rn := "anthropic_environment.test"
+	envName := acctest.RandomWithPrefix("tf-env")
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { acctest.PreCheckManagedAgents(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccEnvironmentResourceConfig_withAptPackages(envName),
 				ConfigStateChecks: []statecheck.StateCheck{
 					statecheck.ExpectKnownValue(rn, tfjsonpath.New("id"), knownvalue.NotNull()),
-					statecheck.ExpectKnownValue(rn, tfjsonpath.New("name"), knownvalue.StringExact(envName)),
+					statecheck.ExpectKnownValue(rn, tfjsonpath.New("apt_packages"),
+						knownvalue.ListExact([]knownvalue.Check{
+							knownvalue.StringExact("gh"),
+							knownvalue.StringExact("jq"),
+						})),
 				},
+			},
+			{
+				ResourceName:      rn,
+				ImportState:       true,
+				ImportStateVerify: true,
 			},
 		},
 	})
@@ -145,23 +201,37 @@ resource "anthropic_environment" "test" {
 `, name)
 }
 
-func testAccEnvironmentResourceConfig_restricted(name string) string {
-	return fmt.Sprintf(`
-resource "anthropic_environment" "test" {
-	name            = %[1]q
-	networking_type = "restricted"
-}
-`, name)
-}
-
-func testAccEnvironmentResourceConfig_withPackages(name string) string {
+func testAccEnvironmentResourceConfig_descAndMeta(name string) string {
 	return fmt.Sprintf(`
 resource "anthropic_environment" "test" {
 	name            = %[1]q
 	networking_type = "unrestricted"
-	packages = {
-		"python" = "3.12"
+	description     = "created-by-acceptance-test"
+	metadata = {
+		owner = "tf-test"
 	}
+}
+`, name)
+}
+
+func testAccEnvironmentResourceConfig_limited(name string) string {
+	return fmt.Sprintf(`
+resource "anthropic_environment" "test" {
+	name                    = %[1]q
+	networking_type         = "limited"
+	allow_package_managers  = true
+	allowed_hosts           = ["api.github.com", "github.com"]
+	apt_packages            = ["jq"]
+}
+`, name)
+}
+
+func testAccEnvironmentResourceConfig_withAptPackages(name string) string {
+	return fmt.Sprintf(`
+resource "anthropic_environment" "test" {
+	name            = %[1]q
+	networking_type = "unrestricted"
+	apt_packages    = ["gh", "jq"]
 }
 `, name)
 }

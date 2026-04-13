@@ -100,8 +100,10 @@ type CreateAgentRequest struct {
 
 // CreateEnvironmentRequest defines model for CreateEnvironmentRequest.
 type CreateEnvironmentRequest struct {
-	Config EnvironmentConfig `json:"config"`
-	Name   string            `json:"name"`
+	Config      EnvironmentConfig  `json:"config"`
+	Name        string             `json:"name"`
+	Description *string            `json:"description,omitempty"`
+	Metadata    *map[string]string `json:"metadata,omitempty"`
 }
 
 // DeletedResource defines model for DeletedResource.
@@ -112,24 +114,51 @@ type DeletedResource struct {
 
 // Environment defines model for Environment.
 type Environment struct {
-	Config    EnvironmentConfig `json:"config"`
-	CreatedAt *string           `json:"created_at,omitempty"`
-	Id        string            `json:"id"`
-	Name      string            `json:"name"`
-	Type      string            `json:"type"`
-	UpdatedAt *string           `json:"updated_at,omitempty"`
+	Config      EnvironmentConfig  `json:"config"`
+	CreatedAt   *string            `json:"created_at,omitempty"`
+	Id          string             `json:"id"`
+	Name        string             `json:"name"`
+	Type        string             `json:"type"`
+	UpdatedAt   *string            `json:"updated_at,omitempty"`
+	Description *string            `json:"description,omitempty"`
+	Metadata    *map[string]string `json:"metadata,omitempty"`
 }
 
 // EnvironmentConfig defines model for EnvironmentConfig.
+//
+// InitScript and Environment are returned by GET but are read-only: the API
+// rejects them on POST/PATCH with "Extra inputs are not permitted". They can
+// currently only be set via the dashboard. We keep them here so GET responses
+// can be decoded.
 type EnvironmentConfig struct {
-	Networking EnvironmentNetworking `json:"networking"`
-	Packages   *map[string]string    `json:"packages,omitempty"`
-	Type       string                `json:"type"`
+	Networking  EnvironmentNetworking `json:"networking"`
+	Packages    *EnvironmentPackages  `json:"packages,omitempty"`
+	Type        string                `json:"type"`
+	InitScript  *string               `json:"init_script,omitempty"`
+	Environment *map[string]string    `json:"environment,omitempty"`
+}
+
+// EnvironmentPackages defines model for EnvironmentPackages. The API returns
+// one list per package manager plus a discriminator `type: "packages"`.
+type EnvironmentPackages struct {
+	Type  string    `json:"type"`
+	Apt   *[]string `json:"apt,omitempty"`
+	Pip   *[]string `json:"pip,omitempty"`
+	Npm   *[]string `json:"npm,omitempty"`
+	Cargo *[]string `json:"cargo,omitempty"`
+	Gem   *[]string `json:"gem,omitempty"`
+	Go    *[]string `json:"go,omitempty"`
 }
 
 // EnvironmentNetworking defines model for EnvironmentNetworking.
+// For `type = "limited"`, AllowMcpServers / AllowPackageManagers / AllowedHosts
+// are returned and accepted on write. For `type = "unrestricted"`, these
+// fields are omitted by the API.
 type EnvironmentNetworking struct {
-	Type string `json:"type"`
+	Type                 string    `json:"type"`
+	AllowMcpServers      *bool     `json:"allow_mcp_servers,omitempty"`
+	AllowPackageManagers *bool     `json:"allow_package_managers,omitempty"`
+	AllowedHosts         *[]string `json:"allowed_hosts,omitempty"`
 }
 
 // Error defines model for Error.
@@ -165,8 +194,10 @@ type UpdateAgentRequest struct {
 
 // UpdateEnvironmentRequest defines model for UpdateEnvironmentRequest.
 type UpdateEnvironmentRequest struct {
-	Config *EnvironmentConfig `json:"config,omitempty"`
-	Name   *string            `json:"name,omitempty"`
+	Config      *EnvironmentConfig `json:"config,omitempty"`
+	Name        *string            `json:"name,omitempty"`
+	Description *string            `json:"description,omitempty"`
+	Metadata    *map[string]string `json:"metadata,omitempty"`
 }
 
 // User defines model for User.

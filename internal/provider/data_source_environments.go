@@ -86,7 +86,7 @@ func (d *EnvironmentsDataSource) Read(ctx context.Context, req datasource.ReadRe
 			params.Page = page
 		}
 
-		httpResp, err := d.client.ListEnvironmentsWithResponse(ctx, params)
+		httpResp, err := d.client.ListEnvironmentsWithResponse(ctx, params, withEnvironmentsBeta)
 		if err != nil {
 			resp.Diagnostics.AddError("Client Error", fmt.Sprintf("Unable to list environments, got error: %s", err))
 			return
