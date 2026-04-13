@@ -722,11 +722,11 @@ components:
     AgentSkillRequest:
       type: object
       required:
-        - id
+        - skill_id
         - type
         - version
       properties:
-        id:
+        skill_id:
           type: string
         type:
           type: string

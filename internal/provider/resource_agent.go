@@ -161,7 +161,7 @@ func (r *AgentResource) Create(ctx context.Context, req resource.CreateRequest, 
 		skills := make([]apiclient.AgentSkillRequest, len(data.Skills))
 		for i, s := range data.Skills {
 			skills[i] = apiclient.AgentSkillRequest{
-				Id:      s.SkillId.ValueString(),
+				SkillId: s.SkillId.ValueString(),
 				Type:    s.Type.ValueString(),
 				Version: s.Version.ValueString(),
 			}
@@ -283,7 +283,7 @@ func (r *AgentResource) Update(ctx context.Context, req resource.UpdateRequest, 
 	skills := make([]apiclient.AgentSkillRequest, len(data.Skills))
 	for i, s := range data.Skills {
 		skills[i] = apiclient.AgentSkillRequest{
-			Id:      s.SkillId.ValueString(),
+			SkillId: s.SkillId.ValueString(),
 			Type:    s.Type.ValueString(),
 			Version: s.Version.ValueString(),
 		}

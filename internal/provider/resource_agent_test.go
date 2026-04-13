@@ -137,6 +137,32 @@ func TestAccAgentResource_withSystem(t *testing.T) {
 	})
 }
 
+// Regression test: skills must round-trip the JSON field name `skill_id`
+// (not `id`) when sent to the API. Previously the OpenAPI schema for
+// AgentSkillRequest mapped it to `id`, which the API rejected with
+// "skills.0.id: Extra inputs are not permitted".
+func TestAccAgentResource_withSkill(t *testing.T) {
+	rn := "anthropic_agent.test"
+	agentName := acctest.RandomWithPrefix("tf-agent")
+	skillName := strings.ToLower(acctest.RandomWithPrefix("tf-skill"))
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { acctest.PreCheckManagedAgents(t) },
+		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccAgentResourceConfig_withSkill(agentName, skillName),
+				ConfigStateChecks: []statecheck.StateCheck{
+					statecheck.ExpectKnownValue(rn, tfjsonpath.New("id"), knownvalue.NotNull()),
+					statecheck.ExpectKnownValue(rn, tfjsonpath.New("skills"), knownvalue.ListSizeExact(1)),
+					statecheck.ExpectKnownValue(rn, tfjsonpath.New("skills").AtSliceIndex(0).AtMapKey("type"), knownvalue.StringExact("custom")),
+					statecheck.ExpectKnownValue(rn, tfjsonpath.New("skills").AtSliceIndex(0).AtMapKey("version"), knownvalue.StringExact("latest")),
+				},
+			},
+		},
+	})
+}
+
 func testAccAgentResourceConfig_basic(name string) string {
 	return fmt.Sprintf(`
 resource "anthropic_agent" "test" {
@@ -168,4 +194,25 @@ resource "anthropic_agent" "test" {
 	system = "You are a DevOps assistant."
 }
 `, name)
+}
+
+func testAccAgentResourceConfig_withSkill(agentName, skillName string) string {
+	return fmt.Sprintf(`
+resource "anthropic_skill" "test" {
+	display_title = %[2]q
+	skill_name    = %[2]q
+	content       = "---\nname: %[2]s\ndescription: Test skill for agent attachment\n---\n\nTest content."
+}
+
+resource "anthropic_agent" "test" {
+	name  = %[1]q
+	model = "claude-sonnet-4-5"
+
+	skills {
+		skill_id = anthropic_skill.test.id
+		type     = "custom"
+		version  = "latest"
+	}
+}
+`, agentName, skillName)
 }
