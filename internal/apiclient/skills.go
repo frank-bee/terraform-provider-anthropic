@@ -9,6 +9,7 @@ import (
 	"io"
 	"mime/multipart"
 	"net/http"
+	"sort"
 )
 
 // Skill represents a skill resource from the API.
@@ -82,25 +83,48 @@ func (c *SkillsClient) applyEditors(ctx context.Context, req *http.Request) erro
 	return nil
 }
 
-// CreateSkill creates a custom skill by uploading a zip file containing SKILL.md.
-func (c *SkillsClient) CreateSkill(ctx context.Context, displayTitle, skillName, skillContent string) (*Skill, error) {
-	// Build the zip in memory
+// buildSkillZip creates a zip with the given files placed under the
+// `skillName/` folder. files maps relative paths (e.g. "SKILL.md",
+// "scripts/helper.sh") to file content. files MUST contain "SKILL.md".
+func buildSkillZip(skillName string, files map[string][]byte) ([]byte, error) {
+	if _, ok := files["SKILL.md"]; !ok {
+		return nil, fmt.Errorf("files map must contain SKILL.md")
+	}
+
 	var zipBuf bytes.Buffer
 	zipWriter := zip.NewWriter(&zipBuf)
 
-	// The folder name inside the zip must match the skill name in SKILL.md
-	f, err := zipWriter.Create(skillName + "/SKILL.md")
-	if err != nil {
-		return nil, fmt.Errorf("creating zip entry: %w", err)
+	// Sort keys so zip output is deterministic (helps caching/idempotency).
+	names := make([]string, 0, len(files))
+	for name := range files {
+		names = append(names, name)
 	}
-	if _, err := f.Write([]byte(skillContent)); err != nil {
-		return nil, fmt.Errorf("writing skill content: %w", err)
+	sort.Strings(names)
+
+	for _, name := range names {
+		f, err := zipWriter.Create(skillName + "/" + name)
+		if err != nil {
+			return nil, fmt.Errorf("creating zip entry %s: %w", name, err)
+		}
+		if _, err := f.Write(files[name]); err != nil {
+			return nil, fmt.Errorf("writing zip entry %s: %w", name, err)
+		}
 	}
 	if err := zipWriter.Close(); err != nil {
 		return nil, fmt.Errorf("closing zip: %w", err)
 	}
+	return zipBuf.Bytes(), nil
+}
 
-	// Build multipart form
+// CreateSkillFromFiles uploads a skill consisting of one or more files.
+// files MUST contain "SKILL.md"; additional files (scripts, references, etc.)
+// are placed alongside it under the skill's folder.
+func (c *SkillsClient) CreateSkillFromFiles(ctx context.Context, displayTitle, skillName string, files map[string][]byte) (*Skill, error) {
+	zipBytes, err := buildSkillZip(skillName, files)
+	if err != nil {
+		return nil, err
+	}
+
 	var body bytes.Buffer
 	writer := multipart.NewWriter(&body)
 
@@ -112,8 +136,8 @@ func (c *SkillsClient) CreateSkill(ctx context.Context, displayTitle, skillName,
 	if err != nil {
 		return nil, fmt.Errorf("creating form file: %w", err)
 	}
-	if _, err := io.Copy(part, &zipBuf); err != nil {
-		return nil, fmt.Errorf("copying zip to form: %w", err)
+	if _, err := part.Write(zipBytes); err != nil {
+		return nil, fmt.Errorf("writing zip to form: %w", err)
 	}
 	if err := writer.Close(); err != nil {
 		return nil, fmt.Errorf("closing multipart writer: %w", err)
@@ -149,6 +173,75 @@ func (c *SkillsClient) CreateSkill(ctx context.Context, displayTitle, skillName,
 	}
 
 	return &skill, nil
+}
+
+// CreateSkill creates a single-file skill from a string SKILL.md content.
+// Convenience wrapper around CreateSkillFromFiles.
+func (c *SkillsClient) CreateSkill(ctx context.Context, displayTitle, skillName, skillContent string) (*Skill, error) {
+	return c.CreateSkillFromFiles(ctx, displayTitle, skillName, map[string][]byte{
+		"SKILL.md": []byte(skillContent),
+	})
+}
+
+// CreateSkillVersionFromFiles uploads a new version of an existing skill
+// from one or more files. The skill keeps its ID; only the version (and
+// contents) advance.
+func (c *SkillsClient) CreateSkillVersionFromFiles(ctx context.Context, skillId, skillName string, files map[string][]byte) (*SkillVersion, error) {
+	zipBytes, err := buildSkillZip(skillName, files)
+	if err != nil {
+		return nil, err
+	}
+
+	var body bytes.Buffer
+	writer := multipart.NewWriter(&body)
+	part, err := writer.CreateFormFile("files[]", skillName+".zip")
+	if err != nil {
+		return nil, fmt.Errorf("creating form file: %w", err)
+	}
+	if _, err := part.Write(zipBytes); err != nil {
+		return nil, fmt.Errorf("writing zip to form: %w", err)
+	}
+	if err := writer.Close(); err != nil {
+		return nil, fmt.Errorf("closing multipart writer: %w", err)
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, c.baseURL+"/v1/skills/"+skillId+"/versions", &body)
+	if err != nil {
+		return nil, fmt.Errorf("creating request: %w", err)
+	}
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+	if err := c.applyEditors(ctx, req); err != nil {
+		return nil, fmt.Errorf("applying request editors: %w", err)
+	}
+
+	resp, err := c.httpClient.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("executing request: %w", err)
+	}
+	defer resp.Body.Close()
+
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("reading response: %w", err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("unexpected status %d: %s", resp.StatusCode, string(respBody))
+	}
+
+	var version SkillVersion
+	if err := json.Unmarshal(respBody, &version); err != nil {
+		return nil, fmt.Errorf("unmarshaling response: %w", err)
+	}
+
+	return &version, nil
+}
+
+// CreateSkillVersion is a convenience wrapper for single-file SKILL.md uploads.
+func (c *SkillsClient) CreateSkillVersion(ctx context.Context, skillId, skillName, skillContent string) (*SkillVersion, error) {
+	return c.CreateSkillVersionFromFiles(ctx, skillId, skillName, map[string][]byte{
+		"SKILL.md": []byte(skillContent),
+	})
 }
 
 // GetSkill retrieves a skill by ID.
