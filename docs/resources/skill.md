@@ -4,14 +4,20 @@ page_title: "anthropic_skill Resource - terraform-provider-anthropic"
 subcategory: ""
 description: |-
   Manages a custom Anthropic Skill.
-  Skills are uploaded as a SKILL.md file with YAML frontmatter containing name and description, followed by markdown instructions.
+  A skill consists of a SKILL.md file (with YAML frontmatter name and description) and optionally additional files (scripts, references, etc.) under the same folder.
+  Use either content for a single-file SKILL.md, or source_dir to point at a directory that contains SKILL.md plus any companion files.
+  When content or source_dir changes, a new skill version is uploaded — the skill keeps its ID, so attached agents do not need to be re-attached.
 ---
 
 # anthropic_skill (Resource)
 
 Manages a custom Anthropic Skill.
 
-Skills are uploaded as a SKILL.md file with YAML frontmatter containing `name` and `description`, followed by markdown instructions.
+A skill consists of a `SKILL.md` file (with YAML frontmatter `name` and `description`) and optionally additional files (scripts, references, etc.) under the same folder.
+
+Use either `content` for a single-file SKILL.md, or `source_dir` to point at a directory that contains SKILL.md plus any companion files.
+
+When `content` or `source_dir` changes, a new skill version is uploaded — the skill keeps its ID, so attached agents do not need to be re-attached.
 
 ## Example Usage
 
@@ -59,7 +65,12 @@ resource "anthropic_agent" "reviewer" {
 
 ### Required
 
-- `content` (String) Full content of SKILL.md including YAML frontmatter and markdown body.
+- `display_title` (String) Display title for the Skill. Must be globally unique within the workspace.
+- `skill_name` (String) Name of the skill (must match the `name` field in SKILL.md frontmatter). Max 64 chars, lowercase letters/numbers/hyphens only.
+
+### Optional
+
+- `content` (String) Full content of SKILL.md including YAML frontmatter and markdown body. Mutually exclusive with `source_dir`. Updating this attribute uploads a new skill version in place (skill ID is preserved).
 
 Example:
 ```
@@ -71,8 +82,7 @@ description: What this skill does
 # Instructions
 ...
 ```
-- `display_title` (String) Display title for the Skill.
-- `skill_name` (String) Name of the skill (must match the `name` field in SKILL.md frontmatter). Max 64 chars, lowercase letters/numbers/hyphens only.
+- `source_dir` (String) Path to a directory containing `SKILL.md` and any additional files (scripts, references, etc.) that should be packaged into the skill. The directory's contents are zipped under the skill's folder. Mutually exclusive with `content`. Updating this attribute (or any file beneath it) uploads a new skill version in place (skill ID is preserved).
 
 ### Read-Only
 
@@ -80,4 +90,5 @@ description: What this skill does
 - `id` (String) ID of the Skill.
 - `latest_version` (String) Latest version identifier of the skill.
 - `source` (String) Source of the skill (`custom` or `anthropic`).
+- `source_hash` (String) SHA-256 of the packaged skill contents. Computed automatically; used to detect changes when `source_dir` is in use (since file contents are not stored in the state otherwise).
 - `updated_at` (String) RFC 3339 datetime when the skill was last updated.
