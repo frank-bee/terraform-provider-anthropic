@@ -26,7 +26,7 @@ resource "anthropic_agent" "with_tools" {
   system = "You are a DevOps assistant that helps with infrastructure tasks."
 
   tools {
-    type = "agent_toolset_20251212"
+    type = "agent_toolset_20260401"
   }
 }
 
@@ -36,7 +36,7 @@ resource "anthropic_agent" "with_mcp" {
   model = "claude-sonnet-4-5"
 
   tools {
-    type = "agent_toolset_20251212"
+    type = "agent_toolset_20260401"
   }
 
   mcp_servers {
@@ -133,7 +133,20 @@ Required:
 
 Optional:
 
+- `configs` (Block List) Per-tool overrides within this toolset. Set `default_config.enabled = false` and enable only the tools you want to allowlist. (see [below for nested schema](#nestedblock--mcp_servers--configs))
 - `default_config` (Block, Optional) Default configuration applied to the auto-generated `mcp_toolset` entry for this server. (see [below for nested schema](#nestedblock--mcp_servers--default_config))
+
+<a id="nestedblock--mcp_servers--configs"></a>
+### Nested Schema for `mcp_servers.configs`
+
+Required:
+
+- `name` (String) Bare tool name as reported by the server (e.g. `list_commits`).
+
+Optional:
+
+- `enabled` (Boolean) Whether this specific tool is enabled.
+
 
 <a id="nestedblock--mcp_servers--default_config"></a>
 ### Nested Schema for `mcp_servers.default_config`
@@ -172,7 +185,20 @@ Required:
 
 Optional:
 
+- `configs` (Block List) Per-tool overrides within this toolset. Set `default_config.enabled = false` and enable only the tools you want to allowlist. (see [below for nested schema](#nestedblock--tools--configs))
 - `default_config` (Block, Optional) Default configuration applied to this tool when instantiated in a session. (see [below for nested schema](#nestedblock--tools--default_config))
+
+<a id="nestedblock--tools--configs"></a>
+### Nested Schema for `tools.configs`
+
+Required:
+
+- `name` (String) Bare tool name as reported by the server (e.g. `list_commits`).
+
+Optional:
+
+- `enabled` (Boolean) Whether this specific tool is enabled.
+
 
 <a id="nestedblock--tools--default_config"></a>
 ### Nested Schema for `tools.default_config`

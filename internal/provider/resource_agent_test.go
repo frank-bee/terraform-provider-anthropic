@@ -43,15 +43,15 @@ func init() {
 						continue
 					}
 
-					log.Printf("[INFO] Destroying agent %s", agent.Id)
+					log.Printf("[INFO] Archiving agent %s", agent.Id)
 
-					_, err := acctest.SharedClient.DeleteAgentWithResponse(ctx, agent.Id)
+					_, err := acctest.SharedClient.ArchiveAgentWithResponse(ctx, agent.Id, withManagedAgentsBeta)
 					if err != nil {
-						log.Printf("[ERROR] Unable to delete agent %s: %s", agent.Id, err)
+						log.Printf("[ERROR] Unable to archive agent %s: %s", agent.Id, err)
 						continue
 					}
 
-					log.Printf("[INFO] Deleted agent %s", agent.Id)
+					log.Printf("[INFO] Archived agent %s", agent.Id)
 				}
 
 				if httpResp.JSON200.NextPage == nil || *httpResp.JSON200.NextPage == "" {
@@ -180,7 +180,7 @@ resource "anthropic_agent" "test" {
 	system = "You are a helpful assistant."
 
 	tools {
-		type = "agent_toolset_20251212"
+		type = "agent_toolset_20260401"
 	}
 }
 `, name)
@@ -231,7 +231,7 @@ resource "anthropic_agent" "test" {
 	model = "claude-sonnet-4-5"
 
 	tools {
-		type = "agent_toolset_20251212"
+		type = "agent_toolset_20260401"
 
 		default_config {
 			enabled = true

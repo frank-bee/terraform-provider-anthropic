@@ -34,7 +34,7 @@ jobs:
         env:
           TF_ACC: "1"
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-        run: go test -v -cover -run "TestAcc(Agent|Skill)Resource" ./internal/provider/
+        run: go test -v -cover -run "TestAcc(Agent|Deployment|Skill)Resource" ./internal/provider/
         timeout-minutes: 10
 
   goreleaser:

@@ -24,6 +24,7 @@ type AgentModel struct {
 type AgentToolModel struct {
 	Type          types.String                 `tfsdk:"type"`
 	DefaultConfig *AgentToolDefaultConfigModel `tfsdk:"default_config"`
+	Configs       []AgentToolConfigModel       `tfsdk:"configs"`
 }
 
 type AgentToolDefaultConfigModel struct {
@@ -35,11 +36,18 @@ type AgentToolPermissionPolicyModel struct {
 	Type types.String `tfsdk:"type"`
 }
 
+// AgentToolConfigModel is a per-tool override within a toolset (the allowlist entry).
+type AgentToolConfigModel struct {
+	Name    types.String `tfsdk:"name"`
+	Enabled types.Bool   `tfsdk:"enabled"`
+}
+
 type McpServerModel struct {
 	Name          types.String                 `tfsdk:"name"`
 	Type          types.String                 `tfsdk:"type"`
 	Url           types.String                 `tfsdk:"url"`
 	DefaultConfig *AgentToolDefaultConfigModel `tfsdk:"default_config"`
+	Configs       []AgentToolConfigModel       `tfsdk:"configs"`
 }
 
 type SkillModel struct {
@@ -49,6 +57,21 @@ type SkillModel struct {
 }
 
 func (m *AgentModel) Fill(a apiclient.Agent) error {
+	// Snapshot the tools/mcp_servers as they were before this Fill (i.e. the
+	// plan being applied, or the prior state on a Read) — used below to avoid
+	// surfacing a `default_config` the API silently populated on its own for
+	// a tool/server the config never set one on. Without this, a bare
+	// `tools { type = "..." }` block (no default_config) round-trips through
+	// Create as "was absent, but now present" and Terraform rejects the
+	// result as an inconsistent plan.
+	// A just-imported resource has a blank model (only `id` set by
+	// ImportStatePassthroughID) going into its first Read — there's no real
+	// "prior config intent" to consult in that case, so trust the API fully
+	// rather than suppressing every default_config it returns.
+	justImported := m.Name.IsNull()
+	priorTools := m.Tools
+	priorMcpServers := m.McpServers
+
 	m.Id = types.StringValue(a.Id)
 	m.Version = types.StringValue(a.Version)
 	m.Name = types.StringValue(a.Name)
@@ -77,15 +100,18 @@ func (m *AgentModel) Fill(a apiclient.Agent) error {
 
 	if a.Tools != nil {
 		var tools []AgentToolModel
+		idx := 0
 		for _, t := range *a.Tools {
 			// Skip mcp_toolset entries — they are auto-generated from mcp_servers
 			if t.Type == "mcp_toolset" {
 				continue
 			}
 			tm := AgentToolModel{
-				Type: types.StringValue(t.Type),
+				Type:    types.StringValue(t.Type),
+				Configs: parseToolConfigs(t.Configs),
 			}
-			if t.DefaultConfig != nil {
+			priorHadDefault := justImported || (idx < len(priorTools) && priorTools[idx].DefaultConfig != nil)
+			if t.DefaultConfig != nil && priorHadDefault {
 				dc := &AgentToolDefaultConfigModel{
 					Enabled: types.BoolPointerValue(t.DefaultConfig.Enabled),
 				}
@@ -97,6 +123,7 @@ func (m *AgentModel) Fill(a apiclient.Agent) error {
 				tm.DefaultConfig = dc
 			}
 			tools = append(tools, tm)
+			idx++
 		}
 		if tools == nil {
 			tools = []AgentToolModel{}
@@ -106,23 +133,40 @@ func (m *AgentModel) Fill(a apiclient.Agent) error {
 		m.Tools = []AgentToolModel{}
 	}
 
+	// Did the prior model (config/state) have a default_config set for this
+	// MCP server's auto-generated mcp_toolset entry? Same reasoning as
+	// priorTools above — don't surface a server-populated default the config
+	// never requested.
+	priorMcpServerHadDefault := map[string]bool{}
+	for _, s := range priorMcpServers {
+		if s.DefaultConfig != nil {
+			priorMcpServerHadDefault[s.Name.ValueString()] = true
+		}
+	}
+
 	// Index mcp_toolset default_configs by server name so we can surface
 	// them on the corresponding mcp_servers entry.
 	mcpToolsetCfg := map[string]*AgentToolDefaultConfigModel{}
+	mcpToolsetConfigs := map[string][]AgentToolConfigModel{}
 	if a.Tools != nil {
 		for _, t := range *a.Tools {
-			if t.Type != "mcp_toolset" || t.McpServerName == nil || t.DefaultConfig == nil {
+			if t.Type != "mcp_toolset" || t.McpServerName == nil {
 				continue
 			}
-			dc := &AgentToolDefaultConfigModel{
-				Enabled: types.BoolPointerValue(t.DefaultConfig.Enabled),
-			}
-			if t.DefaultConfig.PermissionPolicy != nil {
-				dc.PermissionPolicy = &AgentToolPermissionPolicyModel{
-					Type: types.StringValue(t.DefaultConfig.PermissionPolicy.Type),
+			if t.DefaultConfig != nil && (justImported || priorMcpServerHadDefault[*t.McpServerName]) {
+				dc := &AgentToolDefaultConfigModel{
+					Enabled: types.BoolPointerValue(t.DefaultConfig.Enabled),
 				}
+				if t.DefaultConfig.PermissionPolicy != nil {
+					dc.PermissionPolicy = &AgentToolPermissionPolicyModel{
+						Type: types.StringValue(t.DefaultConfig.PermissionPolicy.Type),
+					}
+				}
+				mcpToolsetCfg[*t.McpServerName] = dc
 			}
-			mcpToolsetCfg[*t.McpServerName] = dc
+			if cfgs := parseToolConfigs(t.Configs); cfgs != nil {
+				mcpToolsetConfigs[*t.McpServerName] = cfgs
+			}
 		}
 	}
 
@@ -134,6 +178,7 @@ func (m *AgentModel) Fill(a apiclient.Agent) error {
 				Type:          types.StringValue(s.Type),
 				Url:           types.StringValue(s.Url),
 				DefaultConfig: mcpToolsetCfg[s.Name],
+				Configs:       mcpToolsetConfigs[s.Name],
 			}
 		}
 		m.McpServers = servers
