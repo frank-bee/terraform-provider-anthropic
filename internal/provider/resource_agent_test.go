@@ -180,7 +180,7 @@ resource "anthropic_agent" "test" {
 	system = "You are a helpful assistant."
 
 	tools {
-		type = "agent_toolset_20251212"
+		type = "agent_toolset_20260401"
 	}
 }
 `, name)
@@ -231,7 +231,7 @@ resource "anthropic_agent" "test" {
 	model = "claude-sonnet-4-5"
 
 	tools {
-		type = "agent_toolset_20251212"
+		type = "agent_toolset_20260401"
 
 		default_config {
 			enabled = true

@@ -11,7 +11,7 @@ resource "anthropic_agent" "with_tools" {
   system = "You are a DevOps assistant that helps with infrastructure tasks."
 
   tools {
-    type = "agent_toolset_20251212"
+    type = "agent_toolset_20260401"
   }
 }
 
@@ -21,7 +21,7 @@ resource "anthropic_agent" "with_mcp" {
   model = "claude-sonnet-4-5"
 
   tools {
-    type = "agent_toolset_20251212"
+    type = "agent_toolset_20260401"
   }
 
   mcp_servers {
