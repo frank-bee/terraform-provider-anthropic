@@ -24,7 +24,8 @@ func (d *ServiceAccountDataSource) Metadata(ctx context.Context, req datasource.
 
 func (d *ServiceAccountDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "Get a single service account (`svac_…`) by ID. Requires the provider's `oauth_token`.",
+		MarkdownDescription: "Get a single service account (`svac_…`) by ID. Requires the provider's `oauth_token`.\n\n" +
+			"~> **Experimental (beta).** The Workload Identity Federation endpoints are not exercised by the provider's CI acceptance tests. Treat as beta.",
 		Attributes: map[string]schema.Attribute{
 			"id":                schema.StringAttribute{Required: true, MarkdownDescription: "ID of the service account (`svac_…`)."},
 			"name":              schema.StringAttribute{Computed: true, MarkdownDescription: "Name of the service account."},
@@ -76,7 +77,8 @@ func (d *FederationIssuerDataSource) Metadata(ctx context.Context, req datasourc
 
 func (d *FederationIssuerDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "Get a single federation issuer (`fdis_…`) by ID. Requires the provider's `oauth_token`.",
+		MarkdownDescription: "Get a single federation issuer (`fdis_…`) by ID. Requires the provider's `oauth_token`.\n\n" +
+			"~> **Experimental (beta).** The Workload Identity Federation endpoints are not exercised by the provider's CI acceptance tests. Treat as beta.",
 		Attributes: map[string]schema.Attribute{
 			"id":         schema.StringAttribute{Required: true, MarkdownDescription: "ID of the federation issuer (`fdis_…`)."},
 			"name":       schema.StringAttribute{Computed: true, MarkdownDescription: "Name of the issuer."},
@@ -140,7 +142,8 @@ func (d *FederationRuleDataSource) Metadata(ctx context.Context, req datasource.
 
 func (d *FederationRuleDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "Get a single federation rule (`fdrl_…`) by ID. Requires the provider's `oauth_token`.",
+		MarkdownDescription: "Get a single federation rule (`fdrl_…`) by ID. Requires the provider's `oauth_token`.\n\n" +
+			"~> **Experimental (beta).** The Workload Identity Federation endpoints are not exercised by the provider's CI acceptance tests. Treat as beta.",
 		Attributes: map[string]schema.Attribute{
 			"id":        schema.StringAttribute{Required: true, MarkdownDescription: "ID of the federation rule (`fdrl_…`)."},
 			"name":      schema.StringAttribute{Computed: true, MarkdownDescription: "Name of the rule."},

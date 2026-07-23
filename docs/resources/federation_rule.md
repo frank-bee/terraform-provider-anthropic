@@ -5,6 +5,7 @@ subcategory: ""
 description: |-
   Manages a Workload Identity Federation rule (fdrl_…) — binds an issuer's JWTs (matched by subject/audience/claims/CEL) to a service account and OAuth scope.
   Requires the provider's oauth_token (an org:admin OAuth bearer token). OAuth callers may only manage rules scoped workspace:developer or workspace:inference.
+  ~> Experimental (beta). The Workload Identity Federation endpoints are not exercised by the provider's CI acceptance tests, which run with an Admin API key only (no org:admin OAuth token). Treat this resource as beta and verify its behavior in your own organization.
 ---
 
 # anthropic_federation_rule (Resource)
@@ -12,6 +13,8 @@ description: |-
 Manages a Workload Identity Federation rule (`fdrl_…`) — binds an issuer's JWTs (matched by subject/audience/claims/CEL) to a service account and OAuth scope.
 
 Requires the provider's `oauth_token` (an `org:admin` OAuth bearer token). OAuth callers may only manage rules scoped `workspace:developer` or `workspace:inference`.
+
+~> **Experimental (beta).** The Workload Identity Federation endpoints are not exercised by the provider's CI acceptance tests, which run with an Admin API key only (no `org:admin` OAuth token). Treat this resource as beta and verify its behavior in your own organization.
 
 ## Example Usage
 

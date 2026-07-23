@@ -71,7 +71,9 @@ func (r *VaultResource) Metadata(ctx context.Context, req resource.MetadataReque
 func (r *VaultResource) Schema(ctx context.Context, req resource.SchemaRequest, resp *resource.SchemaResponse) {
 	resp.Schema = schema.Schema{
 		MarkdownDescription: "Manages an Anthropic Vault (`vlt_…`) — a container for stored credentials that " +
-			"Deployments can reference via `vault_ids`.",
+			"Deployments can reference via `vault_ids`.\n\n" +
+			"~> **Experimental (beta).** This resource's wire format was derived from live-API probing rather " +
+			"than published documentation and may change. Treat it as beta.",
 
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{

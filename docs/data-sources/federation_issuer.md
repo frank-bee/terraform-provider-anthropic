@@ -4,11 +4,14 @@ page_title: "anthropic_federation_issuer Data Source - terraform-provider-anthro
 subcategory: ""
 description: |-
   Get a single federation issuer (fdis_…) by ID. Requires the provider's oauth_token.
+  ~> Experimental (beta). The Workload Identity Federation endpoints are not exercised by the provider's CI acceptance tests. Treat as beta.
 ---
 
 # anthropic_federation_issuer (Data Source)
 
 Get a single federation issuer (`fdis_…`) by ID. Requires the provider's `oauth_token`.
+
+~> **Experimental (beta).** The Workload Identity Federation endpoints are not exercised by the provider's CI acceptance tests. Treat as beta.
 
 ## Example Usage
 

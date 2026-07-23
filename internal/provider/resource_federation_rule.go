@@ -21,9 +21,36 @@ func NewFederationRuleResource() resource.Resource {
 
 var _ resource.Resource = &FederationRuleResource{}
 var _ resource.ResourceWithImportState = &FederationRuleResource{}
+var _ resource.ResourceWithValidateConfig = &FederationRuleResource{}
 
 type FederationRuleResource struct {
 	baseResource
+}
+
+// ValidateConfig surfaces the "workspace_id or applies_to_all_workspaces is
+// required" rule at plan time instead of only at apply. A stock validator can't
+// express it because applies_to_all_workspaces is a bool: false is a set value,
+// not "unset", so ExactlyOneOf/AtLeastOneOf on nullness would accept the invalid
+// (workspace_id null, applies_to_all_workspaces false) combination. The Create
+// method keeps the same check as a backstop.
+func (r *FederationRuleResource) ValidateConfig(ctx context.Context, req resource.ValidateConfigRequest, resp *resource.ValidateConfigResponse) {
+	var data FederationRuleModel
+	resp.Diagnostics.Append(req.Config.Get(ctx, &data)...)
+	if resp.Diagnostics.HasError() {
+		return
+	}
+	// Skip when either value is unknown (e.g. workspace_id references another
+	// resource not yet created) — it can't be validated until apply.
+	if data.WorkspaceId.IsUnknown() || data.AppliesToAllWorkspaces.IsUnknown() {
+		return
+	}
+	if data.WorkspaceId.IsNull() && !data.AppliesToAllWorkspaces.ValueBool() {
+		resp.Diagnostics.AddAttributeError(
+			path.Root("workspace_id"),
+			"workspace_id or applies_to_all_workspaces is required",
+			"Set `workspace_id` to enable the rule in one workspace, or `applies_to_all_workspaces = true`.",
+		)
+	}
 }
 
 type FederationRuleMatchModel struct {
@@ -129,7 +156,10 @@ func (r *FederationRuleResource) Schema(ctx context.Context, req resource.Schema
 		MarkdownDescription: "Manages a Workload Identity Federation rule (`fdrl_…`) — binds an issuer's JWTs " +
 			"(matched by subject/audience/claims/CEL) to a service account and OAuth scope.\n\n" +
 			"Requires the provider's `oauth_token` (an `org:admin` OAuth bearer token). OAuth callers may only " +
-			"manage rules scoped `workspace:developer` or `workspace:inference`.",
+			"manage rules scoped `workspace:developer` or `workspace:inference`.\n\n" +
+			"~> **Experimental (beta).** The Workload Identity Federation endpoints are not exercised by " +
+			"the provider's CI acceptance tests, which run with an Admin API key only (no `org:admin` OAuth " +
+			"token). Treat this resource as beta and verify its behavior in your own organization.",
 
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{

@@ -4,11 +4,14 @@ page_title: "anthropic_vault Resource - terraform-provider-anthropic"
 subcategory: ""
 description: |-
   Manages an Anthropic Vault (vlt_…) — a container for stored credentials that Deployments can reference via vault_ids.
+  ~> Experimental (beta). This resource's wire format was derived from live-API probing rather than published documentation and may change. Treat it as beta.
 ---
 
 # anthropic_vault (Resource)
 
 Manages an Anthropic Vault (`vlt_…`) — a container for stored credentials that Deployments can reference via `vault_ids`.
+
+~> **Experimental (beta).** This resource's wire format was derived from live-API probing rather than published documentation and may change. Treat it as beta.
 
 ## Example Usage
 

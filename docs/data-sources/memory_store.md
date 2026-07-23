@@ -4,11 +4,14 @@ page_title: "anthropic_memory_store Data Source - terraform-provider-anthropic"
 subcategory: ""
 description: |-
   Get information about a single Memory Store by ID.
+  ~> Experimental (beta). This resource's wire format was derived from live-API probing rather than published documentation and may change. Treat as beta.
 ---
 
 # anthropic_memory_store (Data Source)
 
 Get information about a single Memory Store by ID.
+
+~> **Experimental (beta).** This resource's wire format was derived from live-API probing rather than published documentation and may change. Treat as beta.
 
 ## Example Usage
 

@@ -70,7 +70,9 @@ func (r *MemoryStoreResource) Schema(ctx context.Context, req resource.SchemaReq
 		MarkdownDescription: "Manages an Anthropic Managed Agents Memory Store (`memstore_…`) — a persistent " +
 			"key-value-ish resource that can be mounted into Deployment sessions for cross-session state.\n\n" +
 			"By default `terraform destroy` archives the Memory Store (soft delete, recoverable via the API) " +
-			"rather than hard-deleting it. Set `delete_on_destroy = true` to hard-delete instead.",
+			"rather than hard-deleting it. Set `delete_on_destroy = true` to hard-delete instead.\n\n" +
+			"~> **Experimental (beta).** This resource's wire format was derived from live-API probing rather " +
+			"than published documentation and may change. Treat it as beta.",
 
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{

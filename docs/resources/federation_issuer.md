@@ -5,6 +5,7 @@ subcategory: ""
 description: |-
   Manages a Workload Identity Federation issuer (fdis_…) — an OIDC identity provider whose JWTs may assert workload identity for your organization.
   Requires the provider's oauth_token (an org:admin OAuth bearer token).
+  ~> Experimental (beta). The Workload Identity Federation endpoints are not exercised by the provider's CI acceptance tests, which run with an Admin API key only (no org:admin OAuth token). Treat this resource as beta and verify its behavior in your own organization.
 ---
 
 # anthropic_federation_issuer (Resource)
@@ -12,6 +13,8 @@ description: |-
 Manages a Workload Identity Federation issuer (`fdis_…`) — an OIDC identity provider whose JWTs may assert workload identity for your organization.
 
 Requires the provider's `oauth_token` (an `org:admin` OAuth bearer token).
+
+~> **Experimental (beta).** The Workload Identity Federation endpoints are not exercised by the provider's CI acceptance tests, which run with an Admin API key only (no `org:admin` OAuth token). Treat this resource as beta and verify its behavior in your own organization.
 
 ## Example Usage
 
