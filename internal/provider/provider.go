@@ -118,7 +118,13 @@ func (p *AnthropicProvider) Configure(ctx context.Context, req provider.Configur
 		func(ctx context.Context, req *http.Request) error {
 			req.Header.Set("anthropic-version", "2023-06-01")
 			req.Header.Set("anthropic-beta", "agent-api-2026-03-01")
-			req.Header.Set("x-api-key", apiKey)
+			// Only set x-api-key when an Admin API key is configured. In an
+			// oauth_token-only configuration apiKey is empty; sending
+			// x-api-key: "" makes every non-WIF request 401 instead of the
+			// per-call OAuth editor taking over cleanly.
+			if apiKey != "" {
+				req.Header.Set("x-api-key", apiKey)
+			}
 			return nil
 		},
 	}

@@ -1,0 +1,43 @@
+- table [ref=f2e3]:
+  - rowgroup [ref=f2e4]:
+    - row [ref=f2e5]:
+      - cell [ref=f2e6]:
+        - table [ref=f2e7]:
+          - rowgroup [ref=f2e8]:
+            - row [ref=f2e9]:
+              - cell [ref=f2e10]:
+                - link [ref=f2e11] [cursor=pointer]:
+                  - /url: https://news.ycombinator.com
+              - cell "Submit" [ref=f2e13]
+    - row [ref=f2e15]
+    - row [ref=f2e16]:
+      - cell [ref=f2e17]:
+        - table [ref=f2e19]:
+          - rowgroup [ref=f2e20]:
+            - row [ref=f2e21]:
+              - cell "title" [ref=f2e22]
+              - cell [ref=f2e23]:
+                - textbox [active] [ref=f2e24]
+            - row [ref=f2e25]:
+              - cell "url" [ref=f2e26]
+              - cell [ref=f2e27]:
+                - textbox [ref=f2e28]
+            - row [ref=f2e29]:
+              - cell "text" [ref=f2e30]
+              - cell [ref=f2e31]:
+                - textbox [ref=f2e32]
+            - row [ref=f2e33]:
+              - cell [ref=f2e34]
+              - cell [ref=f2e35]
+            - row [ref=f2e36]:
+              - cell [ref=f2e37]
+              - cell [ref=f2e38]:
+                - button "submit" [ref=f2e39]
+            - row [ref=f2e40]
+            - row [ref=f2e41]:
+              - cell [ref=f2e42]
+              - cell [ref=f2e43]:
+                - text: Leave url blank to submit a question for discussion. If there is no url, text will appear at the top of the thread. If there is a url, text is optional. You can also submit via
+                - link "bookmarklet" [ref=f2e44] [cursor=pointer]:
+                  - /url: bookmarklet.html
+                - text: .
