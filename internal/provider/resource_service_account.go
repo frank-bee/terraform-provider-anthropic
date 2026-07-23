@@ -51,7 +51,10 @@ func (r *ServiceAccountResource) Schema(ctx context.Context, req resource.Schema
 			"[Workload Identity Federation](https://platform.claude.com/docs/en/manage-claude/workload-identity-federation) " +
 			"tokens act as.\n\n" +
 			"Requires the provider's `oauth_token` (an `org:admin` OAuth bearer token); the Admin API key " +
-			"cannot access these endpoints.",
+			"cannot access these endpoints.\n\n" +
+			"~> **Experimental (beta).** The Workload Identity Federation endpoints are not exercised by " +
+			"the provider's CI acceptance tests, which run with an Admin API key only (no `org:admin` OAuth " +
+			"token). Treat this resource as beta and verify its behavior in your own organization.",
 
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{

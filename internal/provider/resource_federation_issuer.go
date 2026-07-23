@@ -95,7 +95,10 @@ func (r *FederationIssuerResource) Schema(ctx context.Context, req resource.Sche
 	resp.Schema = schema.Schema{
 		MarkdownDescription: "Manages a Workload Identity Federation issuer (`fdis_…`) — an OIDC identity provider " +
 			"whose JWTs may assert workload identity for your organization.\n\n" +
-			"Requires the provider's `oauth_token` (an `org:admin` OAuth bearer token).",
+			"Requires the provider's `oauth_token` (an `org:admin` OAuth bearer token).\n\n" +
+			"~> **Experimental (beta).** The Workload Identity Federation endpoints are not exercised by " +
+			"the provider's CI acceptance tests, which run with an Admin API key only (no `org:admin` OAuth " +
+			"token). Treat this resource as beta and verify its behavior in your own organization.",
 
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{

@@ -4,11 +4,14 @@ page_title: "anthropic_vault Data Source - terraform-provider-anthropic"
 subcategory: ""
 description: |-
   Get information about a single Vault by ID.
+  ~> Experimental (beta). This resource's wire format was derived from live-API probing rather than published documentation and may change. Treat as beta.
 ---
 
 # anthropic_vault (Data Source)
 
 Get information about a single Vault by ID.
+
+~> **Experimental (beta).** This resource's wire format was derived from live-API probing rather than published documentation and may change. Treat as beta.
 
 ## Example Usage
 

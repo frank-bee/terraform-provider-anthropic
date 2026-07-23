@@ -60,7 +60,8 @@ func (d *MemoryStoreDataSource) Metadata(ctx context.Context, req datasource.Met
 
 func (d *MemoryStoreDataSource) Schema(ctx context.Context, req datasource.SchemaRequest, resp *datasource.SchemaResponse) {
 	resp.Schema = schema.Schema{
-		MarkdownDescription: "Get information about a single Memory Store by ID.",
+		MarkdownDescription: "Get information about a single Memory Store by ID.\n\n" +
+			"~> **Experimental (beta).** This resource's wire format was derived from live-API probing rather than published documentation and may change. Treat as beta.",
 
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{

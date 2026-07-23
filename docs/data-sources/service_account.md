@@ -4,11 +4,14 @@ page_title: "anthropic_service_account Data Source - terraform-provider-anthropi
 subcategory: ""
 description: |-
   Get a single service account (svac_…) by ID. Requires the provider's oauth_token.
+  ~> Experimental (beta). The Workload Identity Federation endpoints are not exercised by the provider's CI acceptance tests. Treat as beta.
 ---
 
 # anthropic_service_account (Data Source)
 
 Get a single service account (`svac_…`) by ID. Requires the provider's `oauth_token`.
+
+~> **Experimental (beta).** The Workload Identity Federation endpoints are not exercised by the provider's CI acceptance tests. Treat as beta.
 
 ## Example Usage
 
