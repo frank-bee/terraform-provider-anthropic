@@ -119,6 +119,50 @@ type CreateEnvironmentRequest struct {
 	Name        string             `json:"name"`
 }
 
+// CreateFederationIssuerRequest defines model for CreateFederationIssuerRequest.
+type CreateFederationIssuerRequest struct {
+	IssuerUrl string               `json:"issuer_url"`
+	Jwks      FederationIssuerJwks `json:"jwks"`
+	Name      string               `json:"name"`
+}
+
+// CreateFederationRuleRequest defines model for CreateFederationRuleRequest.
+type CreateFederationRuleRequest struct {
+	AppliesToAllWorkspaces *bool                `json:"applies_to_all_workspaces,omitempty"`
+	IssuerId               string               `json:"issuer_id"`
+	Match                  FederationRuleMatch  `json:"match"`
+	Name                   string               `json:"name"`
+	OauthScope             *string              `json:"oauth_scope,omitempty"`
+	Target                 FederationRuleTarget `json:"target"`
+	TokenLifetimeSeconds   *int                 `json:"token_lifetime_seconds,omitempty"`
+	WorkspaceId            *string              `json:"workspace_id,omitempty"`
+}
+
+// CreateMemoryStoreRequest defines model for CreateMemoryStoreRequest.
+type CreateMemoryStoreRequest struct {
+	Description *string            `json:"description,omitempty"`
+	Metadata    *map[string]string `json:"metadata,omitempty"`
+	Name        string             `json:"name"`
+}
+
+// CreateServiceAccountRequest defines model for CreateServiceAccountRequest.
+type CreateServiceAccountRequest struct {
+	Name             string  `json:"name"`
+	OrganizationRole *string `json:"organization_role,omitempty"`
+}
+
+// CreateVaultRequest defines model for CreateVaultRequest.
+type CreateVaultRequest struct {
+	DisplayName string             `json:"display_name"`
+	Metadata    *map[string]string `json:"metadata,omitempty"`
+}
+
+// DeletedObject defines model for DeletedObject.
+type DeletedObject struct {
+	Id   string  `json:"id"`
+	Type *string `json:"type,omitempty"`
+}
+
 // DeletedResource defines model for DeletedResource.
 type DeletedResource struct {
 	Id   string `json:"id"`
@@ -219,6 +263,55 @@ type Error struct {
 	} `json:"error"`
 }
 
+// FederationIssuer defines model for FederationIssuer.
+type FederationIssuer struct {
+	ArchivedAt *string               `json:"archived_at,omitempty"`
+	CreatedAt  *string               `json:"created_at,omitempty"`
+	Id         string                `json:"id"`
+	IssuerUrl  string                `json:"issuer_url"`
+	Jwks       *FederationIssuerJwks `json:"jwks,omitempty"`
+	Name       string                `json:"name"`
+	Type       *string               `json:"type,omitempty"`
+}
+
+// FederationIssuerJwks defines model for FederationIssuerJwks.
+type FederationIssuerJwks struct {
+	Keys *[]map[string]interface{} `json:"keys,omitempty"`
+
+	// Type discovery | explicit_url | inline
+	Type string  `json:"type"`
+	Url  *string `json:"url,omitempty"`
+}
+
+// FederationRule defines model for FederationRule.
+type FederationRule struct {
+	AppliesToAllWorkspaces *bool                 `json:"applies_to_all_workspaces,omitempty"`
+	ArchivedAt             *string               `json:"archived_at,omitempty"`
+	CreatedAt              *string               `json:"created_at,omitempty"`
+	Id                     string                `json:"id"`
+	IssuerId               string                `json:"issuer_id"`
+	Match                  *FederationRuleMatch  `json:"match,omitempty"`
+	Name                   string                `json:"name"`
+	OauthScope             *string               `json:"oauth_scope,omitempty"`
+	Target                 *FederationRuleTarget `json:"target,omitempty"`
+	TokenLifetimeSeconds   *int                  `json:"token_lifetime_seconds,omitempty"`
+	Type                   *string               `json:"type,omitempty"`
+}
+
+// FederationRuleMatch defines model for FederationRuleMatch.
+type FederationRuleMatch struct {
+	Audience      *string            `json:"audience,omitempty"`
+	Claims        *map[string]string `json:"claims,omitempty"`
+	Condition     *string            `json:"condition,omitempty"`
+	SubjectPrefix *string            `json:"subject_prefix,omitempty"`
+}
+
+// FederationRuleTarget defines model for FederationRuleTarget.
+type FederationRuleTarget struct {
+	ServiceAccountId string `json:"service_account_id"`
+	Type             string `json:"type"`
+}
+
 // Invite defines model for Invite.
 type Invite struct {
 	CreatedAt string `json:"created_at"`
@@ -227,6 +320,28 @@ type Invite struct {
 	Id        string `json:"id"`
 	Role      string `json:"role"`
 	Status    string `json:"status"`
+}
+
+// MemoryStore defines model for MemoryStore.
+type MemoryStore struct {
+	ArchivedAt  *string            `json:"archived_at,omitempty"`
+	CreatedAt   *string            `json:"created_at,omitempty"`
+	Description *string            `json:"description,omitempty"`
+	Id          string             `json:"id"`
+	Metadata    *map[string]string `json:"metadata,omitempty"`
+	Name        string             `json:"name"`
+	Type        *string            `json:"type,omitempty"`
+	UpdatedAt   *string            `json:"updated_at,omitempty"`
+}
+
+// ServiceAccount defines model for ServiceAccount.
+type ServiceAccount struct {
+	ArchivedAt       *string `json:"archived_at,omitempty"`
+	CreatedAt        *string `json:"created_at,omitempty"`
+	Id               string  `json:"id"`
+	Name             string  `json:"name"`
+	OrganizationRole *string `json:"organization_role,omitempty"`
+	Type             *string `json:"type,omitempty"`
 }
 
 // UpdateAgentRequest defines model for UpdateAgentRequest.
@@ -263,6 +378,41 @@ type UpdateEnvironmentRequest struct {
 	Name        *string            `json:"name,omitempty"`
 }
 
+// UpdateFederationIssuerRequest defines model for UpdateFederationIssuerRequest.
+type UpdateFederationIssuerRequest struct {
+	IssuerUrl *string               `json:"issuer_url,omitempty"`
+	Jwks      *FederationIssuerJwks `json:"jwks,omitempty"`
+	Name      *string               `json:"name,omitempty"`
+}
+
+// UpdateFederationRuleRequest defines model for UpdateFederationRuleRequest.
+type UpdateFederationRuleRequest struct {
+	Match                *FederationRuleMatch  `json:"match,omitempty"`
+	Name                 *string               `json:"name,omitempty"`
+	OauthScope           *string               `json:"oauth_scope,omitempty"`
+	Target               *FederationRuleTarget `json:"target,omitempty"`
+	TokenLifetimeSeconds *int                  `json:"token_lifetime_seconds,omitempty"`
+}
+
+// UpdateMemoryStoreRequest defines model for UpdateMemoryStoreRequest.
+type UpdateMemoryStoreRequest struct {
+	Description *string            `json:"description,omitempty"`
+	Metadata    *map[string]string `json:"metadata,omitempty"`
+	Name        *string            `json:"name,omitempty"`
+}
+
+// UpdateServiceAccountRequest defines model for UpdateServiceAccountRequest.
+type UpdateServiceAccountRequest struct {
+	Name             *string `json:"name,omitempty"`
+	OrganizationRole *string `json:"organization_role,omitempty"`
+}
+
+// UpdateVaultRequest defines model for UpdateVaultRequest.
+type UpdateVaultRequest struct {
+	DisplayName *string            `json:"display_name,omitempty"`
+	Metadata    *map[string]string `json:"metadata,omitempty"`
+}
+
 // User defines model for User.
 type User struct {
 	AddedAt string `json:"added_at"`
@@ -270,6 +420,17 @@ type User struct {
 	Id      string `json:"id"`
 	Name    string `json:"name"`
 	Role    string `json:"role"`
+}
+
+// Vault defines model for Vault.
+type Vault struct {
+	ArchivedAt  *string            `json:"archived_at,omitempty"`
+	CreatedAt   *string            `json:"created_at,omitempty"`
+	DisplayName string             `json:"display_name"`
+	Id          string             `json:"id"`
+	Metadata    *map[string]string `json:"metadata,omitempty"`
+	Type        *string            `json:"type,omitempty"`
+	UpdatedAt   *string            `json:"updated_at,omitempty"`
 }
 
 // Workspace defines model for Workspace.
@@ -306,6 +467,28 @@ type ListEnvironmentsParams struct {
 	Page  *string `form:"page,omitempty" json:"page,omitempty"`
 }
 
+// ListMemoryStoresParams defines parameters for ListMemoryStores.
+type ListMemoryStoresParams struct {
+	Limit           *int    `form:"limit,omitempty" json:"limit,omitempty"`
+	Page            *string `form:"page,omitempty" json:"page,omitempty"`
+	IncludeArchived *bool   `form:"include_archived,omitempty" json:"include_archived,omitempty"`
+}
+
+// ListFederationIssuersParams defines parameters for ListFederationIssuers.
+type ListFederationIssuersParams struct {
+	Limit           *int    `form:"limit,omitempty" json:"limit,omitempty"`
+	Page            *string `form:"page,omitempty" json:"page,omitempty"`
+	IncludeArchived *bool   `form:"include_archived,omitempty" json:"include_archived,omitempty"`
+}
+
+// ListFederationRulesParams defines parameters for ListFederationRules.
+type ListFederationRulesParams struct {
+	IssuerId        *string `form:"issuer_id,omitempty" json:"issuer_id,omitempty"`
+	Limit           *int    `form:"limit,omitempty" json:"limit,omitempty"`
+	Page            *string `form:"page,omitempty" json:"page,omitempty"`
+	IncludeArchived *bool   `form:"include_archived,omitempty" json:"include_archived,omitempty"`
+}
+
 // ListInvitesParams defines parameters for ListInvites.
 type ListInvitesParams struct {
 	Limit    *int    `form:"limit,omitempty" json:"limit,omitempty"`
@@ -317,6 +500,13 @@ type ListInvitesParams struct {
 type CreateInviteJSONBody struct {
 	Email string `json:"email"`
 	Role  string `json:"role"`
+}
+
+// ListServiceAccountsParams defines parameters for ListServiceAccounts.
+type ListServiceAccountsParams struct {
+	Limit           *int    `form:"limit,omitempty" json:"limit,omitempty"`
+	Page            *string `form:"page,omitempty" json:"page,omitempty"`
+	IncludeArchived *bool   `form:"include_archived,omitempty" json:"include_archived,omitempty"`
 }
 
 // ListUsersParams defines parameters for ListUsers.
@@ -362,6 +552,13 @@ type UpdateWorkspaceMemberJSONBody struct {
 	WorkspaceRole string `json:"workspace_role"`
 }
 
+// ListVaultsParams defines parameters for ListVaults.
+type ListVaultsParams struct {
+	Limit           *int    `form:"limit,omitempty" json:"limit,omitempty"`
+	Page            *string `form:"page,omitempty" json:"page,omitempty"`
+	IncludeArchived *bool   `form:"include_archived,omitempty" json:"include_archived,omitempty"`
+}
+
 // CreateAgentJSONRequestBody defines body for CreateAgent for application/json ContentType.
 type CreateAgentJSONRequestBody = CreateAgentRequest
 
@@ -380,8 +577,32 @@ type CreateEnvironmentJSONRequestBody = CreateEnvironmentRequest
 // UpdateEnvironmentJSONRequestBody defines body for UpdateEnvironment for application/json ContentType.
 type UpdateEnvironmentJSONRequestBody = UpdateEnvironmentRequest
 
+// CreateMemoryStoreJSONRequestBody defines body for CreateMemoryStore for application/json ContentType.
+type CreateMemoryStoreJSONRequestBody = CreateMemoryStoreRequest
+
+// UpdateMemoryStoreJSONRequestBody defines body for UpdateMemoryStore for application/json ContentType.
+type UpdateMemoryStoreJSONRequestBody = UpdateMemoryStoreRequest
+
+// CreateFederationIssuerJSONRequestBody defines body for CreateFederationIssuer for application/json ContentType.
+type CreateFederationIssuerJSONRequestBody = CreateFederationIssuerRequest
+
+// UpdateFederationIssuerJSONRequestBody defines body for UpdateFederationIssuer for application/json ContentType.
+type UpdateFederationIssuerJSONRequestBody = UpdateFederationIssuerRequest
+
+// CreateFederationRuleJSONRequestBody defines body for CreateFederationRule for application/json ContentType.
+type CreateFederationRuleJSONRequestBody = CreateFederationRuleRequest
+
+// UpdateFederationRuleJSONRequestBody defines body for UpdateFederationRule for application/json ContentType.
+type UpdateFederationRuleJSONRequestBody = UpdateFederationRuleRequest
+
 // CreateInviteJSONRequestBody defines body for CreateInvite for application/json ContentType.
 type CreateInviteJSONRequestBody CreateInviteJSONBody
+
+// CreateServiceAccountJSONRequestBody defines body for CreateServiceAccount for application/json ContentType.
+type CreateServiceAccountJSONRequestBody = CreateServiceAccountRequest
+
+// UpdateServiceAccountJSONRequestBody defines body for UpdateServiceAccount for application/json ContentType.
+type UpdateServiceAccountJSONRequestBody = UpdateServiceAccountRequest
 
 // CreateWorkspaceJSONRequestBody defines body for CreateWorkspace for application/json ContentType.
 type CreateWorkspaceJSONRequestBody CreateWorkspaceJSONBody
@@ -394,6 +615,12 @@ type CreateWorkspaceMemberJSONRequestBody CreateWorkspaceMemberJSONBody
 
 // UpdateWorkspaceMemberJSONRequestBody defines body for UpdateWorkspaceMember for application/json ContentType.
 type UpdateWorkspaceMemberJSONRequestBody UpdateWorkspaceMemberJSONBody
+
+// CreateVaultJSONRequestBody defines body for CreateVault for application/json ContentType.
+type CreateVaultJSONRequestBody = CreateVaultRequest
+
+// UpdateVaultJSONRequestBody defines body for UpdateVault for application/json ContentType.
+type UpdateVaultJSONRequestBody = UpdateVaultRequest
 
 // RequestEditorFn  is the function signature for the RequestEditor callback function
 type RequestEditorFn func(ctx context.Context, req *http.Request) error
@@ -525,6 +752,66 @@ type ClientInterface interface {
 
 	UpdateEnvironment(ctx context.Context, environmentId string, body UpdateEnvironmentJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
+	// ListMemoryStores request
+	ListMemoryStores(ctx context.Context, params *ListMemoryStoresParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateMemoryStoreWithBody request with any body
+	CreateMemoryStoreWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	CreateMemoryStore(ctx context.Context, body CreateMemoryStoreJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteMemoryStore request
+	DeleteMemoryStore(ctx context.Context, memoryStoreId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetMemoryStore request
+	GetMemoryStore(ctx context.Context, memoryStoreId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateMemoryStoreWithBody request with any body
+	UpdateMemoryStoreWithBody(ctx context.Context, memoryStoreId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	UpdateMemoryStore(ctx context.Context, memoryStoreId string, body UpdateMemoryStoreJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ArchiveMemoryStore request
+	ArchiveMemoryStore(ctx context.Context, memoryStoreId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListFederationIssuers request
+	ListFederationIssuers(ctx context.Context, params *ListFederationIssuersParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateFederationIssuerWithBody request with any body
+	CreateFederationIssuerWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	CreateFederationIssuer(ctx context.Context, body CreateFederationIssuerJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetFederationIssuer request
+	GetFederationIssuer(ctx context.Context, issuerId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateFederationIssuerWithBody request with any body
+	UpdateFederationIssuerWithBody(ctx context.Context, issuerId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	UpdateFederationIssuer(ctx context.Context, issuerId string, body UpdateFederationIssuerJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ArchiveFederationIssuer request
+	ArchiveFederationIssuer(ctx context.Context, issuerId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListFederationRules request
+	ListFederationRules(ctx context.Context, params *ListFederationRulesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateFederationRuleWithBody request with any body
+	CreateFederationRuleWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	CreateFederationRule(ctx context.Context, body CreateFederationRuleJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetFederationRule request
+	GetFederationRule(ctx context.Context, ruleId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateFederationRuleWithBody request with any body
+	UpdateFederationRuleWithBody(ctx context.Context, ruleId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	UpdateFederationRule(ctx context.Context, ruleId string, body UpdateFederationRuleJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ArchiveFederationRule request
+	ArchiveFederationRule(ctx context.Context, ruleId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// ListInvites request
 	ListInvites(ctx context.Context, params *ListInvitesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -538,6 +825,25 @@ type ClientInterface interface {
 
 	// GetInvite request
 	GetInvite(ctx context.Context, inviteId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListServiceAccounts request
+	ListServiceAccounts(ctx context.Context, params *ListServiceAccountsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateServiceAccountWithBody request with any body
+	CreateServiceAccountWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	CreateServiceAccount(ctx context.Context, body CreateServiceAccountJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetServiceAccount request
+	GetServiceAccount(ctx context.Context, serviceAccountId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateServiceAccountWithBody request with any body
+	UpdateServiceAccountWithBody(ctx context.Context, serviceAccountId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	UpdateServiceAccount(ctx context.Context, serviceAccountId string, body UpdateServiceAccountJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ArchiveServiceAccount request
+	ArchiveServiceAccount(ctx context.Context, serviceAccountId string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// ListUsers request
 	ListUsers(ctx context.Context, params *ListUsersParams, reqEditors ...RequestEditorFn) (*http.Response, error)
@@ -582,6 +888,28 @@ type ClientInterface interface {
 	UpdateWorkspaceMemberWithBody(ctx context.Context, workspaceId string, userId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	UpdateWorkspaceMember(ctx context.Context, workspaceId string, userId string, body UpdateWorkspaceMemberJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ListVaults request
+	ListVaults(ctx context.Context, params *ListVaultsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CreateVaultWithBody request with any body
+	CreateVaultWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	CreateVault(ctx context.Context, body CreateVaultJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// DeleteVault request
+	DeleteVault(ctx context.Context, vaultId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// GetVault request
+	GetVault(ctx context.Context, vaultId string, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// UpdateVaultWithBody request with any body
+	UpdateVaultWithBody(ctx context.Context, vaultId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	UpdateVault(ctx context.Context, vaultId string, body UpdateVaultJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// ArchiveVault request
+	ArchiveVault(ctx context.Context, vaultId string, reqEditors ...RequestEditorFn) (*http.Response, error)
 }
 
 func (c *Client) ListAgents(ctx context.Context, params *ListAgentsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
@@ -836,6 +1164,270 @@ func (c *Client) UpdateEnvironment(ctx context.Context, environmentId string, bo
 	return c.Client.Do(req)
 }
 
+func (c *Client) ListMemoryStores(ctx context.Context, params *ListMemoryStoresParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListMemoryStoresRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateMemoryStoreWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateMemoryStoreRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateMemoryStore(ctx context.Context, body CreateMemoryStoreJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateMemoryStoreRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DeleteMemoryStore(ctx context.Context, memoryStoreId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteMemoryStoreRequest(c.Server, memoryStoreId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetMemoryStore(ctx context.Context, memoryStoreId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetMemoryStoreRequest(c.Server, memoryStoreId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateMemoryStoreWithBody(ctx context.Context, memoryStoreId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateMemoryStoreRequestWithBody(c.Server, memoryStoreId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateMemoryStore(ctx context.Context, memoryStoreId string, body UpdateMemoryStoreJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateMemoryStoreRequest(c.Server, memoryStoreId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ArchiveMemoryStore(ctx context.Context, memoryStoreId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewArchiveMemoryStoreRequest(c.Server, memoryStoreId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ListFederationIssuers(ctx context.Context, params *ListFederationIssuersParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListFederationIssuersRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateFederationIssuerWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateFederationIssuerRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateFederationIssuer(ctx context.Context, body CreateFederationIssuerJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateFederationIssuerRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetFederationIssuer(ctx context.Context, issuerId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetFederationIssuerRequest(c.Server, issuerId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateFederationIssuerWithBody(ctx context.Context, issuerId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateFederationIssuerRequestWithBody(c.Server, issuerId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateFederationIssuer(ctx context.Context, issuerId string, body UpdateFederationIssuerJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateFederationIssuerRequest(c.Server, issuerId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ArchiveFederationIssuer(ctx context.Context, issuerId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewArchiveFederationIssuerRequest(c.Server, issuerId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ListFederationRules(ctx context.Context, params *ListFederationRulesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListFederationRulesRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateFederationRuleWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateFederationRuleRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateFederationRule(ctx context.Context, body CreateFederationRuleJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateFederationRuleRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetFederationRule(ctx context.Context, ruleId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetFederationRuleRequest(c.Server, ruleId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateFederationRuleWithBody(ctx context.Context, ruleId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateFederationRuleRequestWithBody(c.Server, ruleId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateFederationRule(ctx context.Context, ruleId string, body UpdateFederationRuleJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateFederationRuleRequest(c.Server, ruleId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ArchiveFederationRule(ctx context.Context, ruleId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewArchiveFederationRuleRequest(c.Server, ruleId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
 func (c *Client) ListInvites(ctx context.Context, params *ListInvitesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewListInvitesRequest(c.Server, params)
 	if err != nil {
@@ -886,6 +1478,90 @@ func (c *Client) DeleteInvite(ctx context.Context, inviteId string, reqEditors .
 
 func (c *Client) GetInvite(ctx context.Context, inviteId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetInviteRequest(c.Server, inviteId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ListServiceAccounts(ctx context.Context, params *ListServiceAccountsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListServiceAccountsRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateServiceAccountWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateServiceAccountRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateServiceAccount(ctx context.Context, body CreateServiceAccountJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateServiceAccountRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetServiceAccount(ctx context.Context, serviceAccountId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetServiceAccountRequest(c.Server, serviceAccountId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateServiceAccountWithBody(ctx context.Context, serviceAccountId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateServiceAccountRequestWithBody(c.Server, serviceAccountId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateServiceAccount(ctx context.Context, serviceAccountId string, body UpdateServiceAccountJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateServiceAccountRequest(c.Server, serviceAccountId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ArchiveServiceAccount(ctx context.Context, serviceAccountId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewArchiveServiceAccountRequest(c.Server, serviceAccountId)
 	if err != nil {
 		return nil, err
 	}
@@ -1078,6 +1754,102 @@ func (c *Client) UpdateWorkspaceMemberWithBody(ctx context.Context, workspaceId 
 
 func (c *Client) UpdateWorkspaceMember(ctx context.Context, workspaceId string, userId string, body UpdateWorkspaceMemberJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdateWorkspaceMemberRequest(c.Server, workspaceId, userId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ListVaults(ctx context.Context, params *ListVaultsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewListVaultsRequest(c.Server, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateVaultWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateVaultRequestWithBody(c.Server, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CreateVault(ctx context.Context, body CreateVaultJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCreateVaultRequest(c.Server, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) DeleteVault(ctx context.Context, vaultId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewDeleteVaultRequest(c.Server, vaultId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) GetVault(ctx context.Context, vaultId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewGetVaultRequest(c.Server, vaultId)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateVaultWithBody(ctx context.Context, vaultId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateVaultRequestWithBody(c.Server, vaultId, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) UpdateVault(ctx context.Context, vaultId string, body UpdateVaultJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewUpdateVaultRequest(c.Server, vaultId, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) ArchiveVault(ctx context.Context, vaultId string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewArchiveVaultRequest(c.Server, vaultId)
 	if err != nil {
 		return nil, err
 	}
@@ -1748,6 +2520,764 @@ func NewUpdateEnvironmentRequestWithBody(server string, environmentId string, co
 	return req, nil
 }
 
+// NewListMemoryStoresRequest generates requests for ListMemoryStores
+func NewListMemoryStoresRequest(server string, params *ListMemoryStoresParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/memory_stores")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Limit != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "limit", *params.Limit, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Page != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "page", *params.Page, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.IncludeArchived != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "include_archived", *params.IncludeArchived, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "boolean", Format: ""}); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewCreateMemoryStoreRequest calls the generic CreateMemoryStore builder with application/json body
+func NewCreateMemoryStoreRequest(server string, body CreateMemoryStoreJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCreateMemoryStoreRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewCreateMemoryStoreRequestWithBody generates requests for CreateMemoryStore with any type of body
+func NewCreateMemoryStoreRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/memory_stores")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewDeleteMemoryStoreRequest generates requests for DeleteMemoryStore
+func NewDeleteMemoryStoreRequest(server string, memoryStoreId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "memory_store_id", memoryStoreId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/memory_stores/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetMemoryStoreRequest generates requests for GetMemoryStore
+func NewGetMemoryStoreRequest(server string, memoryStoreId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "memory_store_id", memoryStoreId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/memory_stores/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewUpdateMemoryStoreRequest calls the generic UpdateMemoryStore builder with application/json body
+func NewUpdateMemoryStoreRequest(server string, memoryStoreId string, body UpdateMemoryStoreJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewUpdateMemoryStoreRequestWithBody(server, memoryStoreId, "application/json", bodyReader)
+}
+
+// NewUpdateMemoryStoreRequestWithBody generates requests for UpdateMemoryStore with any type of body
+func NewUpdateMemoryStoreRequestWithBody(server string, memoryStoreId string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "memory_store_id", memoryStoreId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/memory_stores/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewArchiveMemoryStoreRequest generates requests for ArchiveMemoryStore
+func NewArchiveMemoryStoreRequest(server string, memoryStoreId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "memory_store_id", memoryStoreId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/memory_stores/%s/archive", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewListFederationIssuersRequest generates requests for ListFederationIssuers
+func NewListFederationIssuersRequest(server string, params *ListFederationIssuersParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/organizations/federation_issuers")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Limit != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "limit", *params.Limit, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Page != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "page", *params.Page, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.IncludeArchived != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "include_archived", *params.IncludeArchived, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "boolean", Format: ""}); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewCreateFederationIssuerRequest calls the generic CreateFederationIssuer builder with application/json body
+func NewCreateFederationIssuerRequest(server string, body CreateFederationIssuerJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCreateFederationIssuerRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewCreateFederationIssuerRequestWithBody generates requests for CreateFederationIssuer with any type of body
+func NewCreateFederationIssuerRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/organizations/federation_issuers")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewGetFederationIssuerRequest generates requests for GetFederationIssuer
+func NewGetFederationIssuerRequest(server string, issuerId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "issuer_id", issuerId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/organizations/federation_issuers/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewUpdateFederationIssuerRequest calls the generic UpdateFederationIssuer builder with application/json body
+func NewUpdateFederationIssuerRequest(server string, issuerId string, body UpdateFederationIssuerJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewUpdateFederationIssuerRequestWithBody(server, issuerId, "application/json", bodyReader)
+}
+
+// NewUpdateFederationIssuerRequestWithBody generates requests for UpdateFederationIssuer with any type of body
+func NewUpdateFederationIssuerRequestWithBody(server string, issuerId string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "issuer_id", issuerId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/organizations/federation_issuers/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewArchiveFederationIssuerRequest generates requests for ArchiveFederationIssuer
+func NewArchiveFederationIssuerRequest(server string, issuerId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "issuer_id", issuerId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/organizations/federation_issuers/%s/archive", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewListFederationRulesRequest generates requests for ListFederationRules
+func NewListFederationRulesRequest(server string, params *ListFederationRulesParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/organizations/federation_rules")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.IssuerId != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "issuer_id", *params.IssuerId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Limit != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "limit", *params.Limit, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Page != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "page", *params.Page, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.IncludeArchived != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "include_archived", *params.IncludeArchived, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "boolean", Format: ""}); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewCreateFederationRuleRequest calls the generic CreateFederationRule builder with application/json body
+func NewCreateFederationRuleRequest(server string, body CreateFederationRuleJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCreateFederationRuleRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewCreateFederationRuleRequestWithBody generates requests for CreateFederationRule with any type of body
+func NewCreateFederationRuleRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/organizations/federation_rules")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewGetFederationRuleRequest generates requests for GetFederationRule
+func NewGetFederationRuleRequest(server string, ruleId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "rule_id", ruleId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/organizations/federation_rules/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewUpdateFederationRuleRequest calls the generic UpdateFederationRule builder with application/json body
+func NewUpdateFederationRuleRequest(server string, ruleId string, body UpdateFederationRuleJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewUpdateFederationRuleRequestWithBody(server, ruleId, "application/json", bodyReader)
+}
+
+// NewUpdateFederationRuleRequestWithBody generates requests for UpdateFederationRule with any type of body
+func NewUpdateFederationRuleRequestWithBody(server string, ruleId string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "rule_id", ruleId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/organizations/federation_rules/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewArchiveFederationRuleRequest generates requests for ArchiveFederationRule
+func NewArchiveFederationRuleRequest(server string, ruleId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "rule_id", ruleId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/organizations/federation_rules/%s/archive", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 // NewListInvitesRequest generates requests for ListInvites
 func NewListInvitesRequest(server string, params *ListInvitesParams) (*http.Request, error) {
 	var err error
@@ -1930,6 +3460,242 @@ func NewGetInviteRequest(server string, inviteId string) (*http.Request, error) 
 	}
 
 	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewListServiceAccountsRequest generates requests for ListServiceAccounts
+func NewListServiceAccountsRequest(server string, params *ListServiceAccountsParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/organizations/service_accounts")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Limit != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "limit", *params.Limit, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Page != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "page", *params.Page, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.IncludeArchived != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "include_archived", *params.IncludeArchived, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "boolean", Format: ""}); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewCreateServiceAccountRequest calls the generic CreateServiceAccount builder with application/json body
+func NewCreateServiceAccountRequest(server string, body CreateServiceAccountJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCreateServiceAccountRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewCreateServiceAccountRequestWithBody generates requests for CreateServiceAccount with any type of body
+func NewCreateServiceAccountRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/organizations/service_accounts")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewGetServiceAccountRequest generates requests for GetServiceAccount
+func NewGetServiceAccountRequest(server string, serviceAccountId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "service_account_id", serviceAccountId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/organizations/service_accounts/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewUpdateServiceAccountRequest calls the generic UpdateServiceAccount builder with application/json body
+func NewUpdateServiceAccountRequest(server string, serviceAccountId string, body UpdateServiceAccountJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewUpdateServiceAccountRequestWithBody(server, serviceAccountId, "application/json", bodyReader)
+}
+
+// NewUpdateServiceAccountRequestWithBody generates requests for UpdateServiceAccount with any type of body
+func NewUpdateServiceAccountRequestWithBody(server string, serviceAccountId string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "service_account_id", serviceAccountId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/organizations/service_accounts/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewArchiveServiceAccountRequest generates requests for ArchiveServiceAccount
+func NewArchiveServiceAccountRequest(server string, serviceAccountId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "service_account_id", serviceAccountId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/organizations/service_accounts/%s/archive", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -2575,6 +4341,276 @@ func NewUpdateWorkspaceMemberRequestWithBody(server string, workspaceId string, 
 	return req, nil
 }
 
+// NewListVaultsRequest generates requests for ListVaults
+func NewListVaultsRequest(server string, params *ListVaultsParams) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/vaults")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.Limit != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "limit", *params.Limit, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Page != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "page", *params.Page, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.IncludeArchived != nil {
+
+			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "include_archived", *params.IncludeArchived, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "boolean", Format: ""}); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewCreateVaultRequest calls the generic CreateVault builder with application/json body
+func NewCreateVaultRequest(server string, body CreateVaultJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCreateVaultRequestWithBody(server, "application/json", bodyReader)
+}
+
+// NewCreateVaultRequestWithBody generates requests for CreateVault with any type of body
+func NewCreateVaultRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/vaults")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewDeleteVaultRequest generates requests for DeleteVault
+func NewDeleteVaultRequest(server string, vaultId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "vault_id", vaultId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/vaults/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewGetVaultRequest generates requests for GetVault
+func NewGetVaultRequest(server string, vaultId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "vault_id", vaultId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/vaults/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewUpdateVaultRequest calls the generic UpdateVault builder with application/json body
+func NewUpdateVaultRequest(server string, vaultId string, body UpdateVaultJSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewUpdateVaultRequestWithBody(server, vaultId, "application/json", bodyReader)
+}
+
+// NewUpdateVaultRequestWithBody generates requests for UpdateVault with any type of body
+func NewUpdateVaultRequestWithBody(server string, vaultId string, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "vault_id", vaultId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/vaults/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewArchiveVaultRequest generates requests for ArchiveVault
+func NewArchiveVaultRequest(server string, vaultId string) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "vault_id", vaultId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v1/vaults/%s/archive", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
 func (c *Client) applyEditors(ctx context.Context, req *http.Request, additionalEditors []RequestEditorFn) error {
 	for _, r := range c.RequestEditors {
 		if err := r(ctx, req); err != nil {
@@ -2675,6 +4711,66 @@ type ClientWithResponsesInterface interface {
 
 	UpdateEnvironmentWithResponse(ctx context.Context, environmentId string, body UpdateEnvironmentJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateEnvironmentResponse, error)
 
+	// ListMemoryStoresWithResponse request
+	ListMemoryStoresWithResponse(ctx context.Context, params *ListMemoryStoresParams, reqEditors ...RequestEditorFn) (*ListMemoryStoresResponse, error)
+
+	// CreateMemoryStoreWithBodyWithResponse request with any body
+	CreateMemoryStoreWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateMemoryStoreResponse, error)
+
+	CreateMemoryStoreWithResponse(ctx context.Context, body CreateMemoryStoreJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateMemoryStoreResponse, error)
+
+	// DeleteMemoryStoreWithResponse request
+	DeleteMemoryStoreWithResponse(ctx context.Context, memoryStoreId string, reqEditors ...RequestEditorFn) (*DeleteMemoryStoreResponse, error)
+
+	// GetMemoryStoreWithResponse request
+	GetMemoryStoreWithResponse(ctx context.Context, memoryStoreId string, reqEditors ...RequestEditorFn) (*GetMemoryStoreResponse, error)
+
+	// UpdateMemoryStoreWithBodyWithResponse request with any body
+	UpdateMemoryStoreWithBodyWithResponse(ctx context.Context, memoryStoreId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateMemoryStoreResponse, error)
+
+	UpdateMemoryStoreWithResponse(ctx context.Context, memoryStoreId string, body UpdateMemoryStoreJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateMemoryStoreResponse, error)
+
+	// ArchiveMemoryStoreWithResponse request
+	ArchiveMemoryStoreWithResponse(ctx context.Context, memoryStoreId string, reqEditors ...RequestEditorFn) (*ArchiveMemoryStoreResponse, error)
+
+	// ListFederationIssuersWithResponse request
+	ListFederationIssuersWithResponse(ctx context.Context, params *ListFederationIssuersParams, reqEditors ...RequestEditorFn) (*ListFederationIssuersResponse, error)
+
+	// CreateFederationIssuerWithBodyWithResponse request with any body
+	CreateFederationIssuerWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateFederationIssuerResponse, error)
+
+	CreateFederationIssuerWithResponse(ctx context.Context, body CreateFederationIssuerJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateFederationIssuerResponse, error)
+
+	// GetFederationIssuerWithResponse request
+	GetFederationIssuerWithResponse(ctx context.Context, issuerId string, reqEditors ...RequestEditorFn) (*GetFederationIssuerResponse, error)
+
+	// UpdateFederationIssuerWithBodyWithResponse request with any body
+	UpdateFederationIssuerWithBodyWithResponse(ctx context.Context, issuerId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateFederationIssuerResponse, error)
+
+	UpdateFederationIssuerWithResponse(ctx context.Context, issuerId string, body UpdateFederationIssuerJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateFederationIssuerResponse, error)
+
+	// ArchiveFederationIssuerWithResponse request
+	ArchiveFederationIssuerWithResponse(ctx context.Context, issuerId string, reqEditors ...RequestEditorFn) (*ArchiveFederationIssuerResponse, error)
+
+	// ListFederationRulesWithResponse request
+	ListFederationRulesWithResponse(ctx context.Context, params *ListFederationRulesParams, reqEditors ...RequestEditorFn) (*ListFederationRulesResponse, error)
+
+	// CreateFederationRuleWithBodyWithResponse request with any body
+	CreateFederationRuleWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateFederationRuleResponse, error)
+
+	CreateFederationRuleWithResponse(ctx context.Context, body CreateFederationRuleJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateFederationRuleResponse, error)
+
+	// GetFederationRuleWithResponse request
+	GetFederationRuleWithResponse(ctx context.Context, ruleId string, reqEditors ...RequestEditorFn) (*GetFederationRuleResponse, error)
+
+	// UpdateFederationRuleWithBodyWithResponse request with any body
+	UpdateFederationRuleWithBodyWithResponse(ctx context.Context, ruleId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateFederationRuleResponse, error)
+
+	UpdateFederationRuleWithResponse(ctx context.Context, ruleId string, body UpdateFederationRuleJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateFederationRuleResponse, error)
+
+	// ArchiveFederationRuleWithResponse request
+	ArchiveFederationRuleWithResponse(ctx context.Context, ruleId string, reqEditors ...RequestEditorFn) (*ArchiveFederationRuleResponse, error)
+
 	// ListInvitesWithResponse request
 	ListInvitesWithResponse(ctx context.Context, params *ListInvitesParams, reqEditors ...RequestEditorFn) (*ListInvitesResponse, error)
 
@@ -2688,6 +4784,25 @@ type ClientWithResponsesInterface interface {
 
 	// GetInviteWithResponse request
 	GetInviteWithResponse(ctx context.Context, inviteId string, reqEditors ...RequestEditorFn) (*GetInviteResponse, error)
+
+	// ListServiceAccountsWithResponse request
+	ListServiceAccountsWithResponse(ctx context.Context, params *ListServiceAccountsParams, reqEditors ...RequestEditorFn) (*ListServiceAccountsResponse, error)
+
+	// CreateServiceAccountWithBodyWithResponse request with any body
+	CreateServiceAccountWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateServiceAccountResponse, error)
+
+	CreateServiceAccountWithResponse(ctx context.Context, body CreateServiceAccountJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateServiceAccountResponse, error)
+
+	// GetServiceAccountWithResponse request
+	GetServiceAccountWithResponse(ctx context.Context, serviceAccountId string, reqEditors ...RequestEditorFn) (*GetServiceAccountResponse, error)
+
+	// UpdateServiceAccountWithBodyWithResponse request with any body
+	UpdateServiceAccountWithBodyWithResponse(ctx context.Context, serviceAccountId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateServiceAccountResponse, error)
+
+	UpdateServiceAccountWithResponse(ctx context.Context, serviceAccountId string, body UpdateServiceAccountJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateServiceAccountResponse, error)
+
+	// ArchiveServiceAccountWithResponse request
+	ArchiveServiceAccountWithResponse(ctx context.Context, serviceAccountId string, reqEditors ...RequestEditorFn) (*ArchiveServiceAccountResponse, error)
 
 	// ListUsersWithResponse request
 	ListUsersWithResponse(ctx context.Context, params *ListUsersParams, reqEditors ...RequestEditorFn) (*ListUsersResponse, error)
@@ -2732,6 +4847,28 @@ type ClientWithResponsesInterface interface {
 	UpdateWorkspaceMemberWithBodyWithResponse(ctx context.Context, workspaceId string, userId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateWorkspaceMemberResponse, error)
 
 	UpdateWorkspaceMemberWithResponse(ctx context.Context, workspaceId string, userId string, body UpdateWorkspaceMemberJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateWorkspaceMemberResponse, error)
+
+	// ListVaultsWithResponse request
+	ListVaultsWithResponse(ctx context.Context, params *ListVaultsParams, reqEditors ...RequestEditorFn) (*ListVaultsResponse, error)
+
+	// CreateVaultWithBodyWithResponse request with any body
+	CreateVaultWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateVaultResponse, error)
+
+	CreateVaultWithResponse(ctx context.Context, body CreateVaultJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateVaultResponse, error)
+
+	// DeleteVaultWithResponse request
+	DeleteVaultWithResponse(ctx context.Context, vaultId string, reqEditors ...RequestEditorFn) (*DeleteVaultResponse, error)
+
+	// GetVaultWithResponse request
+	GetVaultWithResponse(ctx context.Context, vaultId string, reqEditors ...RequestEditorFn) (*GetVaultResponse, error)
+
+	// UpdateVaultWithBodyWithResponse request with any body
+	UpdateVaultWithBodyWithResponse(ctx context.Context, vaultId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateVaultResponse, error)
+
+	UpdateVaultWithResponse(ctx context.Context, vaultId string, body UpdateVaultJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateVaultResponse, error)
+
+	// ArchiveVaultWithResponse request
+	ArchiveVaultWithResponse(ctx context.Context, vaultId string, reqEditors ...RequestEditorFn) (*ArchiveVaultResponse, error)
 }
 
 type ListAgentsResponse struct {
@@ -3073,6 +5210,367 @@ func (r UpdateEnvironmentResponse) StatusCode() int {
 	return 0
 }
 
+type ListMemoryStoresResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *struct {
+		Data     []MemoryStore `json:"data"`
+		NextPage *string       `json:"next_page,omitempty"`
+	}
+}
+
+// Status returns HTTPResponse.Status
+func (r ListMemoryStoresResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListMemoryStoresResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CreateMemoryStoreResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *MemoryStore
+}
+
+// Status returns HTTPResponse.Status
+func (r CreateMemoryStoreResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CreateMemoryStoreResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteMemoryStoreResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *DeletedObject
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteMemoryStoreResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteMemoryStoreResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetMemoryStoreResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *MemoryStore
+}
+
+// Status returns HTTPResponse.Status
+func (r GetMemoryStoreResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetMemoryStoreResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type UpdateMemoryStoreResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *MemoryStore
+}
+
+// Status returns HTTPResponse.Status
+func (r UpdateMemoryStoreResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UpdateMemoryStoreResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ArchiveMemoryStoreResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *MemoryStore
+}
+
+// Status returns HTTPResponse.Status
+func (r ArchiveMemoryStoreResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ArchiveMemoryStoreResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ListFederationIssuersResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *struct {
+		Data     []FederationIssuer `json:"data"`
+		NextPage *string            `json:"next_page,omitempty"`
+	}
+}
+
+// Status returns HTTPResponse.Status
+func (r ListFederationIssuersResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListFederationIssuersResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CreateFederationIssuerResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *FederationIssuer
+}
+
+// Status returns HTTPResponse.Status
+func (r CreateFederationIssuerResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CreateFederationIssuerResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetFederationIssuerResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *FederationIssuer
+}
+
+// Status returns HTTPResponse.Status
+func (r GetFederationIssuerResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetFederationIssuerResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type UpdateFederationIssuerResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *FederationIssuer
+}
+
+// Status returns HTTPResponse.Status
+func (r UpdateFederationIssuerResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UpdateFederationIssuerResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ArchiveFederationIssuerResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *FederationIssuer
+}
+
+// Status returns HTTPResponse.Status
+func (r ArchiveFederationIssuerResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ArchiveFederationIssuerResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ListFederationRulesResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *struct {
+		Data     []FederationRule `json:"data"`
+		NextPage *string          `json:"next_page,omitempty"`
+	}
+}
+
+// Status returns HTTPResponse.Status
+func (r ListFederationRulesResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListFederationRulesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CreateFederationRuleResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *FederationRule
+}
+
+// Status returns HTTPResponse.Status
+func (r CreateFederationRuleResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CreateFederationRuleResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetFederationRuleResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *FederationRule
+}
+
+// Status returns HTTPResponse.Status
+func (r GetFederationRuleResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetFederationRuleResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type UpdateFederationRuleResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *FederationRule
+}
+
+// Status returns HTTPResponse.Status
+func (r UpdateFederationRuleResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UpdateFederationRuleResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ArchiveFederationRuleResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *FederationRule
+}
+
+// Status returns HTTPResponse.Status
+func (r ArchiveFederationRuleResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ArchiveFederationRuleResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 type ListInvitesResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -3160,6 +5658,119 @@ func (r GetInviteResponse) Status() string {
 
 // StatusCode returns HTTPResponse.StatusCode
 func (r GetInviteResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ListServiceAccountsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *struct {
+		Data     []ServiceAccount `json:"data"`
+		NextPage *string          `json:"next_page,omitempty"`
+	}
+}
+
+// Status returns HTTPResponse.Status
+func (r ListServiceAccountsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListServiceAccountsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CreateServiceAccountResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *ServiceAccount
+}
+
+// Status returns HTTPResponse.Status
+func (r CreateServiceAccountResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CreateServiceAccountResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetServiceAccountResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *ServiceAccount
+}
+
+// Status returns HTTPResponse.Status
+func (r GetServiceAccountResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetServiceAccountResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type UpdateServiceAccountResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *ServiceAccount
+}
+
+// Status returns HTTPResponse.Status
+func (r UpdateServiceAccountResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UpdateServiceAccountResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ArchiveServiceAccountResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *ServiceAccount
+}
+
+// Status returns HTTPResponse.Status
+func (r ArchiveServiceAccountResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ArchiveServiceAccountResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
 	}
@@ -3446,6 +6057,141 @@ func (r UpdateWorkspaceMemberResponse) StatusCode() int {
 	return 0
 }
 
+type ListVaultsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *struct {
+		Data     []Vault `json:"data"`
+		NextPage *string `json:"next_page,omitempty"`
+	}
+}
+
+// Status returns HTTPResponse.Status
+func (r ListVaultsResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ListVaultsResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CreateVaultResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *Vault
+}
+
+// Status returns HTTPResponse.Status
+func (r CreateVaultResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CreateVaultResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type DeleteVaultResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *DeletedObject
+}
+
+// Status returns HTTPResponse.Status
+func (r DeleteVaultResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r DeleteVaultResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type GetVaultResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *Vault
+}
+
+// Status returns HTTPResponse.Status
+func (r GetVaultResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetVaultResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type UpdateVaultResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *Vault
+}
+
+// Status returns HTTPResponse.Status
+func (r UpdateVaultResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r UpdateVaultResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type ArchiveVaultResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *Vault
+}
+
+// Status returns HTTPResponse.Status
+func (r ArchiveVaultResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r ArchiveVaultResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
 // ListAgentsWithResponse request returning *ListAgentsResponse
 func (c *ClientWithResponses) ListAgentsWithResponse(ctx context.Context, params *ListAgentsParams, reqEditors ...RequestEditorFn) (*ListAgentsResponse, error) {
 	rsp, err := c.ListAgents(ctx, params, reqEditors...)
@@ -3629,6 +6375,198 @@ func (c *ClientWithResponses) UpdateEnvironmentWithResponse(ctx context.Context,
 	return ParseUpdateEnvironmentResponse(rsp)
 }
 
+// ListMemoryStoresWithResponse request returning *ListMemoryStoresResponse
+func (c *ClientWithResponses) ListMemoryStoresWithResponse(ctx context.Context, params *ListMemoryStoresParams, reqEditors ...RequestEditorFn) (*ListMemoryStoresResponse, error) {
+	rsp, err := c.ListMemoryStores(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListMemoryStoresResponse(rsp)
+}
+
+// CreateMemoryStoreWithBodyWithResponse request with arbitrary body returning *CreateMemoryStoreResponse
+func (c *ClientWithResponses) CreateMemoryStoreWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateMemoryStoreResponse, error) {
+	rsp, err := c.CreateMemoryStoreWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateMemoryStoreResponse(rsp)
+}
+
+func (c *ClientWithResponses) CreateMemoryStoreWithResponse(ctx context.Context, body CreateMemoryStoreJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateMemoryStoreResponse, error) {
+	rsp, err := c.CreateMemoryStore(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateMemoryStoreResponse(rsp)
+}
+
+// DeleteMemoryStoreWithResponse request returning *DeleteMemoryStoreResponse
+func (c *ClientWithResponses) DeleteMemoryStoreWithResponse(ctx context.Context, memoryStoreId string, reqEditors ...RequestEditorFn) (*DeleteMemoryStoreResponse, error) {
+	rsp, err := c.DeleteMemoryStore(ctx, memoryStoreId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteMemoryStoreResponse(rsp)
+}
+
+// GetMemoryStoreWithResponse request returning *GetMemoryStoreResponse
+func (c *ClientWithResponses) GetMemoryStoreWithResponse(ctx context.Context, memoryStoreId string, reqEditors ...RequestEditorFn) (*GetMemoryStoreResponse, error) {
+	rsp, err := c.GetMemoryStore(ctx, memoryStoreId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetMemoryStoreResponse(rsp)
+}
+
+// UpdateMemoryStoreWithBodyWithResponse request with arbitrary body returning *UpdateMemoryStoreResponse
+func (c *ClientWithResponses) UpdateMemoryStoreWithBodyWithResponse(ctx context.Context, memoryStoreId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateMemoryStoreResponse, error) {
+	rsp, err := c.UpdateMemoryStoreWithBody(ctx, memoryStoreId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateMemoryStoreResponse(rsp)
+}
+
+func (c *ClientWithResponses) UpdateMemoryStoreWithResponse(ctx context.Context, memoryStoreId string, body UpdateMemoryStoreJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateMemoryStoreResponse, error) {
+	rsp, err := c.UpdateMemoryStore(ctx, memoryStoreId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateMemoryStoreResponse(rsp)
+}
+
+// ArchiveMemoryStoreWithResponse request returning *ArchiveMemoryStoreResponse
+func (c *ClientWithResponses) ArchiveMemoryStoreWithResponse(ctx context.Context, memoryStoreId string, reqEditors ...RequestEditorFn) (*ArchiveMemoryStoreResponse, error) {
+	rsp, err := c.ArchiveMemoryStore(ctx, memoryStoreId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseArchiveMemoryStoreResponse(rsp)
+}
+
+// ListFederationIssuersWithResponse request returning *ListFederationIssuersResponse
+func (c *ClientWithResponses) ListFederationIssuersWithResponse(ctx context.Context, params *ListFederationIssuersParams, reqEditors ...RequestEditorFn) (*ListFederationIssuersResponse, error) {
+	rsp, err := c.ListFederationIssuers(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListFederationIssuersResponse(rsp)
+}
+
+// CreateFederationIssuerWithBodyWithResponse request with arbitrary body returning *CreateFederationIssuerResponse
+func (c *ClientWithResponses) CreateFederationIssuerWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateFederationIssuerResponse, error) {
+	rsp, err := c.CreateFederationIssuerWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateFederationIssuerResponse(rsp)
+}
+
+func (c *ClientWithResponses) CreateFederationIssuerWithResponse(ctx context.Context, body CreateFederationIssuerJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateFederationIssuerResponse, error) {
+	rsp, err := c.CreateFederationIssuer(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateFederationIssuerResponse(rsp)
+}
+
+// GetFederationIssuerWithResponse request returning *GetFederationIssuerResponse
+func (c *ClientWithResponses) GetFederationIssuerWithResponse(ctx context.Context, issuerId string, reqEditors ...RequestEditorFn) (*GetFederationIssuerResponse, error) {
+	rsp, err := c.GetFederationIssuer(ctx, issuerId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetFederationIssuerResponse(rsp)
+}
+
+// UpdateFederationIssuerWithBodyWithResponse request with arbitrary body returning *UpdateFederationIssuerResponse
+func (c *ClientWithResponses) UpdateFederationIssuerWithBodyWithResponse(ctx context.Context, issuerId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateFederationIssuerResponse, error) {
+	rsp, err := c.UpdateFederationIssuerWithBody(ctx, issuerId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateFederationIssuerResponse(rsp)
+}
+
+func (c *ClientWithResponses) UpdateFederationIssuerWithResponse(ctx context.Context, issuerId string, body UpdateFederationIssuerJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateFederationIssuerResponse, error) {
+	rsp, err := c.UpdateFederationIssuer(ctx, issuerId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateFederationIssuerResponse(rsp)
+}
+
+// ArchiveFederationIssuerWithResponse request returning *ArchiveFederationIssuerResponse
+func (c *ClientWithResponses) ArchiveFederationIssuerWithResponse(ctx context.Context, issuerId string, reqEditors ...RequestEditorFn) (*ArchiveFederationIssuerResponse, error) {
+	rsp, err := c.ArchiveFederationIssuer(ctx, issuerId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseArchiveFederationIssuerResponse(rsp)
+}
+
+// ListFederationRulesWithResponse request returning *ListFederationRulesResponse
+func (c *ClientWithResponses) ListFederationRulesWithResponse(ctx context.Context, params *ListFederationRulesParams, reqEditors ...RequestEditorFn) (*ListFederationRulesResponse, error) {
+	rsp, err := c.ListFederationRules(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListFederationRulesResponse(rsp)
+}
+
+// CreateFederationRuleWithBodyWithResponse request with arbitrary body returning *CreateFederationRuleResponse
+func (c *ClientWithResponses) CreateFederationRuleWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateFederationRuleResponse, error) {
+	rsp, err := c.CreateFederationRuleWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateFederationRuleResponse(rsp)
+}
+
+func (c *ClientWithResponses) CreateFederationRuleWithResponse(ctx context.Context, body CreateFederationRuleJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateFederationRuleResponse, error) {
+	rsp, err := c.CreateFederationRule(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateFederationRuleResponse(rsp)
+}
+
+// GetFederationRuleWithResponse request returning *GetFederationRuleResponse
+func (c *ClientWithResponses) GetFederationRuleWithResponse(ctx context.Context, ruleId string, reqEditors ...RequestEditorFn) (*GetFederationRuleResponse, error) {
+	rsp, err := c.GetFederationRule(ctx, ruleId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetFederationRuleResponse(rsp)
+}
+
+// UpdateFederationRuleWithBodyWithResponse request with arbitrary body returning *UpdateFederationRuleResponse
+func (c *ClientWithResponses) UpdateFederationRuleWithBodyWithResponse(ctx context.Context, ruleId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateFederationRuleResponse, error) {
+	rsp, err := c.UpdateFederationRuleWithBody(ctx, ruleId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateFederationRuleResponse(rsp)
+}
+
+func (c *ClientWithResponses) UpdateFederationRuleWithResponse(ctx context.Context, ruleId string, body UpdateFederationRuleJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateFederationRuleResponse, error) {
+	rsp, err := c.UpdateFederationRule(ctx, ruleId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateFederationRuleResponse(rsp)
+}
+
+// ArchiveFederationRuleWithResponse request returning *ArchiveFederationRuleResponse
+func (c *ClientWithResponses) ArchiveFederationRuleWithResponse(ctx context.Context, ruleId string, reqEditors ...RequestEditorFn) (*ArchiveFederationRuleResponse, error) {
+	rsp, err := c.ArchiveFederationRule(ctx, ruleId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseArchiveFederationRuleResponse(rsp)
+}
+
 // ListInvitesWithResponse request returning *ListInvitesResponse
 func (c *ClientWithResponses) ListInvitesWithResponse(ctx context.Context, params *ListInvitesParams, reqEditors ...RequestEditorFn) (*ListInvitesResponse, error) {
 	rsp, err := c.ListInvites(ctx, params, reqEditors...)
@@ -3671,6 +6609,67 @@ func (c *ClientWithResponses) GetInviteWithResponse(ctx context.Context, inviteI
 		return nil, err
 	}
 	return ParseGetInviteResponse(rsp)
+}
+
+// ListServiceAccountsWithResponse request returning *ListServiceAccountsResponse
+func (c *ClientWithResponses) ListServiceAccountsWithResponse(ctx context.Context, params *ListServiceAccountsParams, reqEditors ...RequestEditorFn) (*ListServiceAccountsResponse, error) {
+	rsp, err := c.ListServiceAccounts(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListServiceAccountsResponse(rsp)
+}
+
+// CreateServiceAccountWithBodyWithResponse request with arbitrary body returning *CreateServiceAccountResponse
+func (c *ClientWithResponses) CreateServiceAccountWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateServiceAccountResponse, error) {
+	rsp, err := c.CreateServiceAccountWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateServiceAccountResponse(rsp)
+}
+
+func (c *ClientWithResponses) CreateServiceAccountWithResponse(ctx context.Context, body CreateServiceAccountJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateServiceAccountResponse, error) {
+	rsp, err := c.CreateServiceAccount(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateServiceAccountResponse(rsp)
+}
+
+// GetServiceAccountWithResponse request returning *GetServiceAccountResponse
+func (c *ClientWithResponses) GetServiceAccountWithResponse(ctx context.Context, serviceAccountId string, reqEditors ...RequestEditorFn) (*GetServiceAccountResponse, error) {
+	rsp, err := c.GetServiceAccount(ctx, serviceAccountId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetServiceAccountResponse(rsp)
+}
+
+// UpdateServiceAccountWithBodyWithResponse request with arbitrary body returning *UpdateServiceAccountResponse
+func (c *ClientWithResponses) UpdateServiceAccountWithBodyWithResponse(ctx context.Context, serviceAccountId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateServiceAccountResponse, error) {
+	rsp, err := c.UpdateServiceAccountWithBody(ctx, serviceAccountId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateServiceAccountResponse(rsp)
+}
+
+func (c *ClientWithResponses) UpdateServiceAccountWithResponse(ctx context.Context, serviceAccountId string, body UpdateServiceAccountJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateServiceAccountResponse, error) {
+	rsp, err := c.UpdateServiceAccount(ctx, serviceAccountId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateServiceAccountResponse(rsp)
+}
+
+// ArchiveServiceAccountWithResponse request returning *ArchiveServiceAccountResponse
+func (c *ClientWithResponses) ArchiveServiceAccountWithResponse(ctx context.Context, serviceAccountId string, reqEditors ...RequestEditorFn) (*ArchiveServiceAccountResponse, error) {
+	rsp, err := c.ArchiveServiceAccount(ctx, serviceAccountId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseArchiveServiceAccountResponse(rsp)
 }
 
 // ListUsersWithResponse request returning *ListUsersResponse
@@ -3811,6 +6810,76 @@ func (c *ClientWithResponses) UpdateWorkspaceMemberWithResponse(ctx context.Cont
 		return nil, err
 	}
 	return ParseUpdateWorkspaceMemberResponse(rsp)
+}
+
+// ListVaultsWithResponse request returning *ListVaultsResponse
+func (c *ClientWithResponses) ListVaultsWithResponse(ctx context.Context, params *ListVaultsParams, reqEditors ...RequestEditorFn) (*ListVaultsResponse, error) {
+	rsp, err := c.ListVaults(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseListVaultsResponse(rsp)
+}
+
+// CreateVaultWithBodyWithResponse request with arbitrary body returning *CreateVaultResponse
+func (c *ClientWithResponses) CreateVaultWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateVaultResponse, error) {
+	rsp, err := c.CreateVaultWithBody(ctx, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateVaultResponse(rsp)
+}
+
+func (c *ClientWithResponses) CreateVaultWithResponse(ctx context.Context, body CreateVaultJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateVaultResponse, error) {
+	rsp, err := c.CreateVault(ctx, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateVaultResponse(rsp)
+}
+
+// DeleteVaultWithResponse request returning *DeleteVaultResponse
+func (c *ClientWithResponses) DeleteVaultWithResponse(ctx context.Context, vaultId string, reqEditors ...RequestEditorFn) (*DeleteVaultResponse, error) {
+	rsp, err := c.DeleteVault(ctx, vaultId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseDeleteVaultResponse(rsp)
+}
+
+// GetVaultWithResponse request returning *GetVaultResponse
+func (c *ClientWithResponses) GetVaultWithResponse(ctx context.Context, vaultId string, reqEditors ...RequestEditorFn) (*GetVaultResponse, error) {
+	rsp, err := c.GetVault(ctx, vaultId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetVaultResponse(rsp)
+}
+
+// UpdateVaultWithBodyWithResponse request with arbitrary body returning *UpdateVaultResponse
+func (c *ClientWithResponses) UpdateVaultWithBodyWithResponse(ctx context.Context, vaultId string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateVaultResponse, error) {
+	rsp, err := c.UpdateVaultWithBody(ctx, vaultId, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateVaultResponse(rsp)
+}
+
+func (c *ClientWithResponses) UpdateVaultWithResponse(ctx context.Context, vaultId string, body UpdateVaultJSONRequestBody, reqEditors ...RequestEditorFn) (*UpdateVaultResponse, error) {
+	rsp, err := c.UpdateVault(ctx, vaultId, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseUpdateVaultResponse(rsp)
+}
+
+// ArchiveVaultWithResponse request returning *ArchiveVaultResponse
+func (c *ClientWithResponses) ArchiveVaultWithResponse(ctx context.Context, vaultId string, reqEditors ...RequestEditorFn) (*ArchiveVaultResponse, error) {
+	rsp, err := c.ArchiveVault(ctx, vaultId, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseArchiveVaultResponse(rsp)
 }
 
 // ParseListAgentsResponse parses an HTTP response from a ListAgentsWithResponse call
@@ -4212,6 +7281,431 @@ func ParseUpdateEnvironmentResponse(rsp *http.Response) (*UpdateEnvironmentRespo
 	return response, nil
 }
 
+// ParseListMemoryStoresResponse parses an HTTP response from a ListMemoryStoresWithResponse call
+func ParseListMemoryStoresResponse(rsp *http.Response) (*ListMemoryStoresResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListMemoryStoresResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			Data     []MemoryStore `json:"data"`
+			NextPage *string       `json:"next_page,omitempty"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCreateMemoryStoreResponse parses an HTTP response from a CreateMemoryStoreWithResponse call
+func ParseCreateMemoryStoreResponse(rsp *http.Response) (*CreateMemoryStoreResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CreateMemoryStoreResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest MemoryStore
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteMemoryStoreResponse parses an HTTP response from a DeleteMemoryStoreWithResponse call
+func ParseDeleteMemoryStoreResponse(rsp *http.Response) (*DeleteMemoryStoreResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteMemoryStoreResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest DeletedObject
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetMemoryStoreResponse parses an HTTP response from a GetMemoryStoreWithResponse call
+func ParseGetMemoryStoreResponse(rsp *http.Response) (*GetMemoryStoreResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetMemoryStoreResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest MemoryStore
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseUpdateMemoryStoreResponse parses an HTTP response from a UpdateMemoryStoreWithResponse call
+func ParseUpdateMemoryStoreResponse(rsp *http.Response) (*UpdateMemoryStoreResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UpdateMemoryStoreResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest MemoryStore
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseArchiveMemoryStoreResponse parses an HTTP response from a ArchiveMemoryStoreWithResponse call
+func ParseArchiveMemoryStoreResponse(rsp *http.Response) (*ArchiveMemoryStoreResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ArchiveMemoryStoreResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest MemoryStore
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListFederationIssuersResponse parses an HTTP response from a ListFederationIssuersWithResponse call
+func ParseListFederationIssuersResponse(rsp *http.Response) (*ListFederationIssuersResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListFederationIssuersResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			Data     []FederationIssuer `json:"data"`
+			NextPage *string            `json:"next_page,omitempty"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCreateFederationIssuerResponse parses an HTTP response from a CreateFederationIssuerWithResponse call
+func ParseCreateFederationIssuerResponse(rsp *http.Response) (*CreateFederationIssuerResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CreateFederationIssuerResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest FederationIssuer
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetFederationIssuerResponse parses an HTTP response from a GetFederationIssuerWithResponse call
+func ParseGetFederationIssuerResponse(rsp *http.Response) (*GetFederationIssuerResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetFederationIssuerResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest FederationIssuer
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseUpdateFederationIssuerResponse parses an HTTP response from a UpdateFederationIssuerWithResponse call
+func ParseUpdateFederationIssuerResponse(rsp *http.Response) (*UpdateFederationIssuerResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UpdateFederationIssuerResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest FederationIssuer
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseArchiveFederationIssuerResponse parses an HTTP response from a ArchiveFederationIssuerWithResponse call
+func ParseArchiveFederationIssuerResponse(rsp *http.Response) (*ArchiveFederationIssuerResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ArchiveFederationIssuerResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest FederationIssuer
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListFederationRulesResponse parses an HTTP response from a ListFederationRulesWithResponse call
+func ParseListFederationRulesResponse(rsp *http.Response) (*ListFederationRulesResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListFederationRulesResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			Data     []FederationRule `json:"data"`
+			NextPage *string          `json:"next_page,omitempty"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCreateFederationRuleResponse parses an HTTP response from a CreateFederationRuleWithResponse call
+func ParseCreateFederationRuleResponse(rsp *http.Response) (*CreateFederationRuleResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CreateFederationRuleResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest FederationRule
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetFederationRuleResponse parses an HTTP response from a GetFederationRuleWithResponse call
+func ParseGetFederationRuleResponse(rsp *http.Response) (*GetFederationRuleResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetFederationRuleResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest FederationRule
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseUpdateFederationRuleResponse parses an HTTP response from a UpdateFederationRuleWithResponse call
+func ParseUpdateFederationRuleResponse(rsp *http.Response) (*UpdateFederationRuleResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UpdateFederationRuleResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest FederationRule
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseArchiveFederationRuleResponse parses an HTTP response from a ArchiveFederationRuleWithResponse call
+func ParseArchiveFederationRuleResponse(rsp *http.Response) (*ArchiveFederationRuleResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ArchiveFederationRuleResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest FederationRule
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
 // ParseListInvitesResponse parses an HTTP response from a ListInvitesWithResponse call
 func ParseListInvitesResponse(rsp *http.Response) (*ListInvitesResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
@@ -4311,6 +7805,139 @@ func ParseGetInviteResponse(rsp *http.Response) (*GetInviteResponse, error) {
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest Invite
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListServiceAccountsResponse parses an HTTP response from a ListServiceAccountsWithResponse call
+func ParseListServiceAccountsResponse(rsp *http.Response) (*ListServiceAccountsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListServiceAccountsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			Data     []ServiceAccount `json:"data"`
+			NextPage *string          `json:"next_page,omitempty"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCreateServiceAccountResponse parses an HTTP response from a CreateServiceAccountWithResponse call
+func ParseCreateServiceAccountResponse(rsp *http.Response) (*CreateServiceAccountResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CreateServiceAccountResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ServiceAccount
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetServiceAccountResponse parses an HTTP response from a GetServiceAccountWithResponse call
+func ParseGetServiceAccountResponse(rsp *http.Response) (*GetServiceAccountResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetServiceAccountResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ServiceAccount
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseUpdateServiceAccountResponse parses an HTTP response from a UpdateServiceAccountWithResponse call
+func ParseUpdateServiceAccountResponse(rsp *http.Response) (*UpdateServiceAccountResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UpdateServiceAccountResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ServiceAccount
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseArchiveServiceAccountResponse parses an HTTP response from a ArchiveServiceAccountWithResponse call
+func ParseArchiveServiceAccountResponse(rsp *http.Response) (*ArchiveServiceAccountResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ArchiveServiceAccountResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest ServiceAccount
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -4645,6 +8272,165 @@ func ParseUpdateWorkspaceMemberResponse(rsp *http.Response) (*UpdateWorkspaceMem
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest WorkspaceMember
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseListVaultsResponse parses an HTTP response from a ListVaultsWithResponse call
+func ParseListVaultsResponse(rsp *http.Response) (*ListVaultsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ListVaultsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			Data     []Vault `json:"data"`
+			NextPage *string `json:"next_page,omitempty"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCreateVaultResponse parses an HTTP response from a CreateVaultWithResponse call
+func ParseCreateVaultResponse(rsp *http.Response) (*CreateVaultResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CreateVaultResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest Vault
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseDeleteVaultResponse parses an HTTP response from a DeleteVaultWithResponse call
+func ParseDeleteVaultResponse(rsp *http.Response) (*DeleteVaultResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &DeleteVaultResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest DeletedObject
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetVaultResponse parses an HTTP response from a GetVaultWithResponse call
+func ParseGetVaultResponse(rsp *http.Response) (*GetVaultResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetVaultResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest Vault
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseUpdateVaultResponse parses an HTTP response from a UpdateVaultWithResponse call
+func ParseUpdateVaultResponse(rsp *http.Response) (*UpdateVaultResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UpdateVaultResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest Vault
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseArchiveVaultResponse parses an HTTP response from a ArchiveVaultWithResponse call
+func ParseArchiveVaultResponse(rsp *http.Response) (*ArchiveVaultResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &ArchiveVaultResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest Vault
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}

@@ -23,6 +23,18 @@ func withManagedAgentsBeta(_ context.Context, req *http.Request) error {
 	return nil
 }
 
+// withOAuthBearer swaps the provider-level x-api-key auth for an org:admin OAuth
+// bearer token. The Workload Identity Federation endpoints (service accounts,
+// federation issuers, federation rules) reject the Admin API key and accept only
+// a Bearer token, so these requests must drop x-api-key and set Authorization.
+func withOAuthBearer(token string) apiclient.RequestEditorFn {
+	return func(_ context.Context, req *http.Request) error {
+		req.Header.Del("x-api-key")
+		req.Header.Set("authorization", "Bearer "+token)
+		return nil
+	}
+}
+
 func NewAgentResource() resource.Resource {
 	return &AgentResource{}
 }

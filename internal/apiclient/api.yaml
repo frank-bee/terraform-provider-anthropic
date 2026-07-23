@@ -615,6 +615,222 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Deployment"
+  /v1/vaults:
+    get:
+      operationId: listVaults
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+        - name: page
+          in: query
+          schema:
+            type: string
+        - name: include_archived
+          in: query
+          schema:
+            type: boolean
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Vault"
+                  next_page:
+                    type: string
+                    nullable: true
+    post:
+      operationId: createVault
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateVaultRequest"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Vault"
+  /v1/vaults/{vault_id}:
+    get:
+      operationId: getVault
+      parameters:
+        - name: vault_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Vault"
+    post:
+      operationId: updateVault
+      parameters:
+        - name: vault_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateVaultRequest"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Vault"
+    delete:
+      operationId: deleteVault
+      parameters:
+        - name: vault_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeletedObject"
+  /v1/vaults/{vault_id}/archive:
+    post:
+      operationId: archiveVault
+      parameters:
+        - name: vault_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Vault"
+  /v1/memory_stores:
+    get:
+      operationId: listMemoryStores
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+        - name: page
+          in: query
+          schema:
+            type: string
+        - name: include_archived
+          in: query
+          schema:
+            type: boolean
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/MemoryStore"
+                  next_page:
+                    type: string
+                    nullable: true
+    post:
+      operationId: createMemoryStore
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateMemoryStoreRequest"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MemoryStore"
+  /v1/memory_stores/{memory_store_id}:
+    get:
+      operationId: getMemoryStore
+      parameters:
+        - name: memory_store_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MemoryStore"
+    post:
+      operationId: updateMemoryStore
+      parameters:
+        - name: memory_store_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateMemoryStoreRequest"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MemoryStore"
+    delete:
+      operationId: deleteMemoryStore
+      parameters:
+        - name: memory_store_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeletedObject"
+  /v1/memory_stores/{memory_store_id}/archive:
+    post:
+      operationId: archiveMemoryStore
+      parameters:
+        - name: memory_store_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MemoryStore"
   # ==================== End Managed Agents API ====================
   /v1/organizations/workspaces/{workspace_id}/members/{user_id}:
     get:
@@ -684,6 +900,292 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/WorkspaceMember"
+  /v1/organizations/service_accounts:
+    get:
+      operationId: listServiceAccounts
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+        - name: page
+          in: query
+          schema:
+            type: string
+        - name: include_archived
+          in: query
+          schema:
+            type: boolean
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/ServiceAccount"
+                  next_page:
+                    type: string
+                    nullable: true
+    post:
+      operationId: createServiceAccount
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateServiceAccountRequest"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServiceAccount"
+  /v1/organizations/service_accounts/{service_account_id}:
+    get:
+      operationId: getServiceAccount
+      parameters:
+        - name: service_account_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServiceAccount"
+    post:
+      operationId: updateServiceAccount
+      parameters:
+        - name: service_account_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateServiceAccountRequest"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServiceAccount"
+  /v1/organizations/service_accounts/{service_account_id}/archive:
+    post:
+      operationId: archiveServiceAccount
+      parameters:
+        - name: service_account_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ServiceAccount"
+  /v1/organizations/federation_issuers:
+    get:
+      operationId: listFederationIssuers
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+        - name: page
+          in: query
+          schema:
+            type: string
+        - name: include_archived
+          in: query
+          schema:
+            type: boolean
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/FederationIssuer"
+                  next_page:
+                    type: string
+                    nullable: true
+    post:
+      operationId: createFederationIssuer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateFederationIssuerRequest"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FederationIssuer"
+  /v1/organizations/federation_issuers/{issuer_id}:
+    get:
+      operationId: getFederationIssuer
+      parameters:
+        - name: issuer_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FederationIssuer"
+    post:
+      operationId: updateFederationIssuer
+      parameters:
+        - name: issuer_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateFederationIssuerRequest"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FederationIssuer"
+  /v1/organizations/federation_issuers/{issuer_id}/archive:
+    post:
+      operationId: archiveFederationIssuer
+      parameters:
+        - name: issuer_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FederationIssuer"
+  /v1/organizations/federation_rules:
+    get:
+      operationId: listFederationRules
+      parameters:
+        - name: issuer_id
+          in: query
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+        - name: page
+          in: query
+          schema:
+            type: string
+        - name: include_archived
+          in: query
+          schema:
+            type: boolean
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - data
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/FederationRule"
+                  next_page:
+                    type: string
+                    nullable: true
+    post:
+      operationId: createFederationRule
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateFederationRuleRequest"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FederationRule"
+  /v1/organizations/federation_rules/{rule_id}:
+    get:
+      operationId: getFederationRule
+      parameters:
+        - name: rule_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FederationRule"
+    post:
+      operationId: updateFederationRule
+      parameters:
+        - name: rule_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateFederationRuleRequest"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FederationRule"
+  /v1/organizations/federation_rules/{rule_id}/archive:
+    post:
+      operationId: archiveFederationRule
+      parameters:
+        - name: rule_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FederationRule"
 security:
   - apiKeyAuth: []
   - versionHeader: []
@@ -1273,3 +1775,302 @@ components:
           type: array
           items:
             type: string
+    DeletedObject:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+    Vault:
+      type: object
+      required:
+        - id
+        - display_name
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+        display_name:
+          type: string
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+        created_at:
+          type: string
+          nullable: true
+        updated_at:
+          type: string
+          nullable: true
+        archived_at:
+          type: string
+          nullable: true
+    CreateVaultRequest:
+      type: object
+      required:
+        - display_name
+      properties:
+        display_name:
+          type: string
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+    UpdateVaultRequest:
+      type: object
+      properties:
+        display_name:
+          type: string
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+    MemoryStore:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+        created_at:
+          type: string
+          nullable: true
+        updated_at:
+          type: string
+          nullable: true
+        archived_at:
+          type: string
+          nullable: true
+    CreateMemoryStoreRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+    UpdateMemoryStoreRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+    ServiceAccount:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+        name:
+          type: string
+        organization_role:
+          type: string
+        created_at:
+          type: string
+          nullable: true
+        archived_at:
+          type: string
+          nullable: true
+    CreateServiceAccountRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+        organization_role:
+          type: string
+    UpdateServiceAccountRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        organization_role:
+          type: string
+    FederationIssuerJwks:
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          type: string
+          description: "discovery | explicit_url | inline"
+        url:
+          type: string
+          nullable: true
+        keys:
+          type: array
+          nullable: true
+          items:
+            type: object
+            additionalProperties: true
+    FederationIssuer:
+      type: object
+      required:
+        - id
+        - name
+        - issuer_url
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+        name:
+          type: string
+        issuer_url:
+          type: string
+        jwks:
+          $ref: "#/components/schemas/FederationIssuerJwks"
+        created_at:
+          type: string
+          nullable: true
+        archived_at:
+          type: string
+          nullable: true
+    CreateFederationIssuerRequest:
+      type: object
+      required:
+        - name
+        - issuer_url
+        - jwks
+      properties:
+        name:
+          type: string
+        issuer_url:
+          type: string
+        jwks:
+          $ref: "#/components/schemas/FederationIssuerJwks"
+    UpdateFederationIssuerRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        issuer_url:
+          type: string
+        jwks:
+          $ref: "#/components/schemas/FederationIssuerJwks"
+    FederationRuleMatch:
+      type: object
+      properties:
+        subject_prefix:
+          type: string
+          nullable: true
+        audience:
+          type: string
+          nullable: true
+        claims:
+          type: object
+          nullable: true
+          additionalProperties:
+            type: string
+        condition:
+          type: string
+          nullable: true
+    FederationRuleTarget:
+      type: object
+      required:
+        - type
+        - service_account_id
+      properties:
+        type:
+          type: string
+        service_account_id:
+          type: string
+    FederationRule:
+      type: object
+      required:
+        - id
+        - name
+        - issuer_id
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+        name:
+          type: string
+        issuer_id:
+          type: string
+        match:
+          $ref: "#/components/schemas/FederationRuleMatch"
+        target:
+          $ref: "#/components/schemas/FederationRuleTarget"
+        oauth_scope:
+          type: string
+        token_lifetime_seconds:
+          type: integer
+        applies_to_all_workspaces:
+          type: boolean
+        created_at:
+          type: string
+          nullable: true
+        archived_at:
+          type: string
+          nullable: true
+    CreateFederationRuleRequest:
+      type: object
+      required:
+        - name
+        - issuer_id
+        - match
+        - target
+      properties:
+        name:
+          type: string
+        issuer_id:
+          type: string
+        match:
+          $ref: "#/components/schemas/FederationRuleMatch"
+        target:
+          $ref: "#/components/schemas/FederationRuleTarget"
+        workspace_id:
+          type: string
+        applies_to_all_workspaces:
+          type: boolean
+        oauth_scope:
+          type: string
+        token_lifetime_seconds:
+          type: integer
+    UpdateFederationRuleRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        match:
+          $ref: "#/components/schemas/FederationRuleMatch"
+        target:
+          $ref: "#/components/schemas/FederationRuleTarget"
+        oauth_scope:
+          type: string
+        token_lifetime_seconds:
+          type: integer

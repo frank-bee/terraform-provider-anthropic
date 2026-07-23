@@ -14,7 +14,14 @@ The Anthropic provider manages Anthropic resources including workspaces, organiz
 ```terraform
 # Configure the Anthropic provider
 provider "anthropic" {
+  # Admin API key for standard resources (or set ANTHROPIC_API_KEY).
   api_key = "sk-ant-adminxx-xxxxx-xxxxx-xxxxx-xxxxx"
+
+  # An org:admin OAuth bearer token (or set ANTHROPIC_OAUTH_TOKEN). Required
+  # only by the Workload Identity Federation resources (anthropic_service_account,
+  # anthropic_federation_issuer, anthropic_federation_rule), which the Admin API
+  # key cannot access. Obtain via `ant auth print-credentials --access-token`.
+  oauth_token = "sk-ant-oat01-xxxxx-xxxxx"
 }
 
 # Create a new workspace
@@ -42,3 +49,4 @@ resource "anthropic_workspace_member" "example" {
 
 - `api_key` (String, Sensitive) The Admin API key for authentication. Get this from the [Anthropic console](https://console.anthropic.com/settings/admin-keys). It can be sourced from the `ANTHROPIC_API_KEY` environment variable.
 - `base_url` (String) API endpoint for the Anthropic service. Defaults to `https://api.anthropic.com`. It can be sourced from the `ANTHROPIC_BASE_URL` environment variable.
+- `oauth_token` (String, Sensitive) An `org:admin` OAuth bearer token. Required only by the Workload Identity Federation resources (`anthropic_service_account`, `anthropic_federation_issuer`, `anthropic_federation_rule`), which the Admin API key cannot access. Obtain it with `ant auth login --scope org:admin` then `ant auth print-credentials --access-token`. It can be sourced from the `ANTHROPIC_OAUTH_TOKEN` environment variable.
