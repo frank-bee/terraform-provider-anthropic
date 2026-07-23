@@ -29,8 +29,9 @@ type AnthropicProvider struct {
 
 // AnthropicProviderModel describes the provider data model.
 type AnthropicProviderModel struct {
-	BaseUrl types.String `tfsdk:"base_url"`
-	ApiKey  types.String `tfsdk:"api_key"`
+	BaseUrl    types.String `tfsdk:"base_url"`
+	ApiKey     types.String `tfsdk:"api_key"`
+	OAuthToken types.String `tfsdk:"oauth_token"`
 }
 
 func (p *AnthropicProvider) Metadata(ctx context.Context, req provider.MetadataRequest, resp *provider.MetadataResponse) {
@@ -50,6 +51,14 @@ func (p *AnthropicProvider) Schema(ctx context.Context, req provider.SchemaReque
 				MarkdownDescription: "The Admin API key for authentication. Get this from the [Anthropic console](https://console.anthropic.com/settings/admin-keys). It can be sourced from the `ANTHROPIC_API_KEY` environment variable.",
 				Optional:            true,
 				Sensitive:           true,
+			},
+			"oauth_token": schema.StringAttribute{
+				MarkdownDescription: "An `org:admin` OAuth bearer token. Required only by the Workload Identity Federation resources " +
+					"(`anthropic_service_account`, `anthropic_federation_issuer`, `anthropic_federation_rule`), which the " +
+					"Admin API key cannot access. Obtain it with `ant auth login --scope org:admin` then " +
+					"`ant auth print-credentials --access-token`. It can be sourced from the `ANTHROPIC_OAUTH_TOKEN` environment variable.",
+				Optional:  true,
+				Sensitive: true,
 			},
 		},
 	}
@@ -79,13 +88,24 @@ func (p *AnthropicProvider) Configure(ctx context.Context, req provider.Configur
 		apiKey = v
 	}
 
+	var oauthToken string
+	if !data.OAuthToken.IsNull() {
+		oauthToken = data.OAuthToken.ValueString()
+	} else if v := os.Getenv("ANTHROPIC_OAUTH_TOKEN"); v != "" {
+		oauthToken = v
+	}
+
 	if baseUrl == "" {
 		resp.Diagnostics.AddError("base_url is required", "base_url is required")
 		return
 	}
 
-	if apiKey == "" {
-		resp.Diagnostics.AddError("api_key is required", "api_key is required")
+	if apiKey == "" && oauthToken == "" {
+		resp.Diagnostics.AddError(
+			"api_key or oauth_token is required",
+			"Set `api_key` (or ANTHROPIC_API_KEY) for standard resources, and/or `oauth_token` "+
+				"(or ANTHROPIC_OAUTH_TOKEN) for the Workload Identity Federation resources.",
+		)
 		return
 	}
 
@@ -118,8 +138,9 @@ func (p *AnthropicProvider) Configure(ctx context.Context, req provider.Configur
 	skillsClient := apiclient.NewSkillsClient(client, baseUrl, stdClient, editors)
 
 	clients := &ProviderClients{
-		API:    client,
-		Skills: skillsClient,
+		API:        client,
+		Skills:     skillsClient,
+		OAuthToken: oauthToken,
 	}
 
 	resp.DataSourceData = clients
@@ -131,8 +152,13 @@ func (p *AnthropicProvider) Resources(ctx context.Context) []func() resource.Res
 		NewAgentResource,
 		NewDeploymentResource,
 		NewEnvironmentResource,
+		NewFederationIssuerResource,
+		NewFederationRuleResource,
+		NewMemoryStoreResource,
 		NewOrganizationInviteResource,
+		NewServiceAccountResource,
 		NewSkillResource,
+		NewVaultResource,
 		NewWorkspaceMemberResource,
 		NewWorkspaceResource,
 	}
@@ -140,10 +166,19 @@ func (p *AnthropicProvider) Resources(ctx context.Context) []func() resource.Res
 
 func (p *AnthropicProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
 	return []func() datasource.DataSource{
+		NewAgentDataSource,
 		NewAgentsDataSource,
+		NewDeploymentDataSource,
+		NewEnvironmentDataSource,
 		NewEnvironmentsDataSource,
+		NewFederationIssuerDataSource,
+		NewFederationRuleDataSource,
+		NewMemoryStoreDataSource,
 		NewOrganizationInvitesDataSource,
+		NewServiceAccountDataSource,
+		NewSkillDataSource,
 		NewSkillsDataSource,
+		NewVaultDataSource,
 		NewUserDataSource,
 		NewUsersDataSource,
 		NewWorkspaceDataSource,

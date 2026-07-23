@@ -33,3 +33,7 @@ website/vendor
 
 # Keep windows files with windows line endings
 *.winfile eol=crlf
+
+# Local scratch notes (not for commit)
+TODO.local.md
+*.local.md

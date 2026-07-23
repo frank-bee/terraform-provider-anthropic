@@ -5,7 +5,23 @@ Guidance for AI agents (and humans) working in this repository.
 ## What this is
 
 A Terraform provider (`frank-bee/anthropic`) wrapping Anthropic's Managed
-Agents, Skills, Environments, Workspaces, and Organization APIs.
+Agents, Skills, Environments, Vaults, Memory Stores, Workspaces, Organization,
+and Workload Identity Federation APIs.
+
+## Authentication planes
+
+Two credentials, set on the provider or via env:
+
+- `api_key` (`ANTHROPIC_API_KEY`) — Admin API key. Used by every resource
+  except the Workload Identity Federation plane.
+- `oauth_token` (`ANTHROPIC_OAUTH_TOKEN`) — an `org:admin` OAuth bearer token
+  (`ant auth print-credentials --access-token`). **Required only** by
+  `anthropic_service_account`, `anthropic_federation_issuer`,
+  `anthropic_federation_rule` — those endpoints reject the Admin API key. In
+  code these call `oauthEditor()` / `withOAuthBearer` (drops `x-api-key`, sets
+  `Authorization: Bearer`). See `resource.go` / `resource_agent.go`.
+
+At least one of the two must be set.
 
 ## Layout
 
@@ -54,6 +70,15 @@ TF_ACC=1 ANTHROPIC_API_KEY=sk-... go test ./internal/provider/ -sweep=all -sweep
 
 The sweepers are defined per-resource in `resource_*_test.go`. Each one
 deletes every resource whose `Name` / `display_title` starts with `tf-`.
+
+The three Workload Identity Federation sweepers (`anthropic_service_account`,
+`anthropic_federation_issuer`, `anthropic_federation_rule`) authenticate with
+`acctest.SharedOAuthClient` and **skip gracefully (log + return nil) when
+`ANTHROPIC_OAUTH_TOKEN` is unset** — so a normal `-sweep=all` run without an
+org:admin token doesn't hard-fail. Their acceptance tests use
+`acctest.PreCheckFederation`, which `t.Skip`s without the token.
+The `anthropic_vault` / `anthropic_memory_store` sweepers use the plain
+`x-api-key` client with `withManagedAgentsBeta`.
 
 If you don't run this, orphans accumulate in the workspace under names like
 `tf-agent-<random>`. They're visible in
@@ -154,3 +179,9 @@ renamed fields = major bump.
 - Skill source dirs: the `source_dir` attribute uploads an entire tree.
   `SKILL.md` must be at the root; `references/` is the conventional place
   for templates and example files the agent loads at runtime.
+- `anthropic_vault` / `anthropic_memory_store` live on the managed-agents
+  beta (`withManagedAgentsBeta`). Both expose `delete_on_destroy` (default
+  `false`): on destroy the provider **archives** (`POST .../archive`) by
+  default, or **hard-deletes** (`DELETE`) when set `true`. `DELETE` returns a
+  `{id, type: "*_deleted"}` object, not the full resource. Their wire shapes
+  were derived from live-API probing, not published docs.
