@@ -72,3 +72,14 @@ resource "anthropic_environment" "limited" {
 - `id` (String) ID of the Environment.
 - `init_script` (String) Read-only. Shell script executed when each session boots. Currently cannot be set via API — use the Anthropic dashboard.
 - `updated_at` (String) RFC 3339 datetime string indicating when the Environment was last updated.
+
+## Import
+
+Import is supported using the following syntax:
+
+The [`terraform import` command](https://developer.hashicorp.com/terraform/cli/commands/import) can be used, for example:
+
+```shell
+# Import an existing environment by ID
+terraform import anthropic_environment.example environment_id
+```

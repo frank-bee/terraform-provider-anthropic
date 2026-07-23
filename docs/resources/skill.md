@@ -92,3 +92,14 @@ description: What this skill does
 - `source` (String) Source of the skill (`custom` or `anthropic`).
 - `source_hash` (String) SHA-256 of the packaged skill contents. Computed automatically; used to detect changes when `source_dir` is in use (since file contents are not stored in the state otherwise).
 - `updated_at` (String) RFC 3339 datetime when the skill was last updated.
+
+## Import
+
+Import is supported using the following syntax:
+
+The [`terraform import` command](https://developer.hashicorp.com/terraform/cli/commands/import) can be used, for example:
+
+```shell
+# Import an existing skill by ID
+terraform import anthropic_skill.example skill_id
+```

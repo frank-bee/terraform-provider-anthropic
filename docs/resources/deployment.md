@@ -89,3 +89,14 @@ Read-Only:
 
 - `last_run_at` (String) RFC 3339 datetime string of the last scheduled run, if any.
 - `upcoming_runs_at` (List of String) RFC 3339 datetime strings of the next few scheduled runs.
+
+## Import
+
+Import is supported using the following syntax:
+
+The [`terraform import` command](https://developer.hashicorp.com/terraform/cli/commands/import) can be used, for example:
+
+```shell
+# Import an existing deployment by ID
+terraform import anthropic_deployment.example deployment_id
+```
