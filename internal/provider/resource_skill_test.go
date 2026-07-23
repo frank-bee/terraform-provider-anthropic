@@ -1,9 +1,12 @@
 package provider
 
 import (
+	"context"
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/frank-bee/terraform-provider-anthropic/internal/acctest"
@@ -13,6 +16,40 @@ import (
 	"github.com/hashicorp/terraform-plugin-testing/statecheck"
 	"github.com/hashicorp/terraform-plugin-testing/tfjsonpath"
 )
+
+func init() {
+	resource.AddTestSweepers("anthropic_skill", &resource.Sweeper{
+		Name: "anthropic_skill",
+		F: func(r string) error {
+			ctx := context.Background()
+
+			list, err := acctest.SharedSkillsClient.ListSkills(ctx)
+			if err != nil {
+				return fmt.Errorf("unable to list skills: %w", err)
+			}
+
+			for _, skill := range list.Data {
+				// Test runs use either "tf-skill-..." (skill_name) or
+				// "TF Skill ..." (display_title) — match both case-insensitively.
+				title := strings.ToLower(skill.DisplayTitle)
+				if !strings.HasPrefix(title, "tf-") && !strings.HasPrefix(title, "tf ") {
+					continue
+				}
+
+				log.Printf("[INFO] Deleting skill %s (%s)", skill.Id, skill.DisplayTitle)
+
+				if err := acctest.SharedSkillsClient.DeleteSkillWithVersions(ctx, skill.Id); err != nil {
+					log.Printf("[ERROR] Unable to delete skill %s: %s", skill.Id, err)
+					continue
+				}
+
+				log.Printf("[INFO] Deleted skill %s", skill.Id)
+			}
+
+			return nil
+		},
+	})
+}
 
 func TestAccSkillResource_basic(t *testing.T) {
 	rn := "anthropic_skill.test"
