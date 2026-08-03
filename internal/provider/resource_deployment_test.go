@@ -10,6 +10,7 @@ import (
 
 	"github.com/frank-bee/terraform-provider-anthropic/internal/acctest"
 	"github.com/frank-bee/terraform-provider-anthropic/internal/apiclient"
+	"github.com/hashicorp/terraform-plugin-framework/types"
 	"github.com/hashicorp/terraform-plugin-testing/helper/resource"
 	"github.com/hashicorp/terraform-plugin-testing/knownvalue"
 	"github.com/hashicorp/terraform-plugin-testing/statecheck"
@@ -63,6 +64,49 @@ func init() {
 
 			return nil
 		},
+	})
+}
+
+// TestBuildAgentRef pins the wire shape of the `agent` field. The pinned form
+// MUST carry the `type: "agent"` discriminator: without it the API rejects the
+// request with `400 deployment.agent.selector.type: Field required`, an error
+// that names a field the caller never sent and so reads like a provider-side
+// schema mismatch. Nothing asserted this shape before, which is why shipping
+// `agent_version` broke every pinned create/update until 0.7.2.
+func TestBuildAgentRef(t *testing.T) {
+	const agentID = "agent_01XhLy65YTftvbhyUTw3pRBG"
+
+	t.Run("unset version floats to latest as a bare id string", func(t *testing.T) {
+		for _, version := range []types.String{
+			types.StringNull(),
+			types.StringUnknown(),
+			types.StringValue(""),
+		} {
+			got := buildAgentRef(types.StringValue(agentID), version)
+			if got != agentID {
+				t.Fatalf("expected bare id string %q, got %#v", agentID, got)
+			}
+		}
+	})
+
+	t.Run("set version pins with the type discriminator", func(t *testing.T) {
+		got, ok := buildAgentRef(types.StringValue(agentID), types.StringValue("2")).(map[string]interface{})
+		if !ok {
+			t.Fatalf("expected a map for a pinned version, got %T", got)
+		}
+		want := map[string]interface{}{
+			"type":    "agent",
+			"id":      agentID,
+			"version": "2",
+		}
+		for k, wantV := range want {
+			if got[k] != wantV {
+				t.Errorf("agent[%q] = %#v, want %#v", k, got[k], wantV)
+			}
+		}
+		if len(got) != len(want) {
+			t.Errorf("unexpected extra keys: got %#v, want exactly %#v", got, want)
+		}
 	})
 }
 

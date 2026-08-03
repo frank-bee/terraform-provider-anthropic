@@ -61,7 +61,7 @@ resource "anthropic_deployment" "scheduled" {
 
 ### Optional
 
-- `agent_version` (String) Pin the Deployment to a specific Agent version. Omit to float to the Agent's latest version as of each apply (the API re-pins it internally on create/update; this attribute then just reflects whatever version that resolved to).
+- `agent_version` (String) Pin the Deployment to a specific Agent version. The API resolves this only when the Deployment itself is created or updated — **not** when the Agent changes. Omitting it therefore does NOT keep the Deployment on the Agent's latest version: an in-place Agent update (new prompt, new model) bumps the Agent to the next version while the Deployment keeps dispatching the old one, with no Terraform diff to reveal it. To follow the Agent, set this to the Agent's computed version (`agent_version = anthropic_agent.example.version`) so an Agent change forces a Deployment update in the same apply.
 - `description` (String) Description of what the Deployment does.
 - `initial_events` (List of String) Events sent to each session immediately after creation. Each element is a JSON-encoded event object, e.g. `jsonencode({type = "user.message", content = [{type = "text", text = "..."}]})`. At least 1, maximum 50.
 - `metadata` (Map of String) Free-form string metadata attached to the Deployment.

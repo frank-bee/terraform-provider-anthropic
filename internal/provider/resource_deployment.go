@@ -65,9 +65,14 @@ func (r *DeploymentResource) Schema(ctx context.Context, req resource.SchemaRequ
 				Required:            true,
 			},
 			"agent_version": schema.StringAttribute{
-				MarkdownDescription: "Pin the Deployment to a specific Agent version. Omit to float to the " +
-					"Agent's latest version as of each apply (the API re-pins it internally on create/update; " +
-					"this attribute then just reflects whatever version that resolved to).",
+				MarkdownDescription: "Pin the Deployment to a specific Agent version. The API resolves this " +
+					"only when the Deployment itself is created or updated — **not** when the Agent changes. " +
+					"Omitting it therefore does NOT keep the Deployment on the Agent's latest version: an " +
+					"in-place Agent update (new prompt, new model) bumps the Agent to the next version while " +
+					"the Deployment keeps dispatching the old one, with no Terraform diff to reveal it. To " +
+					"follow the Agent, set this to the Agent's computed version " +
+					"(`agent_version = anthropic_agent.example.version`) so an Agent change forces a " +
+					"Deployment update in the same apply.",
 				Optional: true,
 				Computed: true,
 			},
@@ -156,11 +161,24 @@ func (r *DeploymentResource) Schema(ctx context.Context, req resource.SchemaRequ
 }
 
 // buildAgentRef returns either a bare agent-ID string (float to latest) or a
-// {id, version} object (pin to a specific version) — the API's `agent` field
-// accepts both shapes on create/update, matching what `ant` sends.
+// {type, id, version} object (pin to a specific version) — the API's `agent`
+// field accepts both shapes on create/update.
+//
+// The object form REQUIRES the `type: "agent"` discriminator. Without it the
+// API rejects the whole request with a misleading error naming a field the
+// caller never sent:
+//
+//	400 deployment.agent.selector.type: Field required
+//
+// `version` may be a string — the API coerces it to a number in the response —
+// so no conversion is needed here, only the discriminator.
 func buildAgentRef(id, version types.String) interface{} {
 	if !version.IsNull() && !version.IsUnknown() && version.ValueString() != "" {
-		return map[string]interface{}{"id": id.ValueString(), "version": version.ValueString()}
+		return map[string]interface{}{
+			"type":    "agent",
+			"id":      id.ValueString(),
+			"version": version.ValueString(),
+		}
 	}
 	return id.ValueString()
 }
