@@ -78,7 +78,7 @@ func TestAccAgentResource_basic(t *testing.T) {
 				ConfigStateChecks: []statecheck.StateCheck{
 					statecheck.ExpectKnownValue(rn, tfjsonpath.New("id"), knownvalue.NotNull()),
 					statecheck.ExpectKnownValue(rn, tfjsonpath.New("name"), knownvalue.StringExact(agentName)),
-					statecheck.ExpectKnownValue(rn, tfjsonpath.New("model"), knownvalue.StringExact("claude-sonnet-4-5")),
+					statecheck.ExpectKnownValue(rn, tfjsonpath.New("model"), knownvalue.StringExact("claude-sonnet-5-5")),
 					statecheck.ExpectKnownValue(rn, tfjsonpath.New("version"), knownvalue.NotNull()),
 				},
 			},
@@ -167,7 +167,7 @@ func testAccAgentResourceConfig_basic(name string) string {
 	return fmt.Sprintf(`
 resource "anthropic_agent" "test" {
 	name  = %[1]q
-	model = "claude-sonnet-4-5"
+	model = "claude-sonnet-5-5"
 }
 `, name)
 }
@@ -176,7 +176,7 @@ func testAccAgentResourceConfig_withTools(name string) string {
 	return fmt.Sprintf(`
 resource "anthropic_agent" "test" {
 	name   = %[1]q
-	model  = "claude-sonnet-4-5"
+	model  = "claude-sonnet-5-5"
 	system = "You are a helpful assistant."
 
 	tools {
@@ -190,7 +190,7 @@ func testAccAgentResourceConfig_withSystem(name string) string {
 	return fmt.Sprintf(`
 resource "anthropic_agent" "test" {
 	name   = %[1]q
-	model  = "claude-sonnet-4-5"
+	model  = "claude-sonnet-5-5"
 	system = "You are a DevOps assistant."
 }
 `, name)
@@ -228,7 +228,7 @@ func testAccAgentResourceConfig_withToolDefaultConfig(name string) string {
 	return fmt.Sprintf(`
 resource "anthropic_agent" "test" {
 	name  = %[1]q
-	model = "claude-sonnet-4-5"
+	model = "claude-sonnet-5-5"
 
 	tools {
 		type = "agent_toolset_20260401"
@@ -254,7 +254,7 @@ resource "anthropic_skill" "test" {
 
 resource "anthropic_agent" "test" {
 	name  = %[1]q
-	model = "claude-sonnet-4-5"
+	model = "claude-sonnet-5-5"
 
 	skills {
 		skill_id = anthropic_skill.test.id
