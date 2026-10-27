@@ -43,7 +43,7 @@ provider "anthropic" {
 
 resource "anthropic_agent" "assistant" {
   name  = "my-assistant"
-  model = "claude-sonnet-4-5"
+  model = "claude-sonnet-5-5"
 
   tools {
     type = "agent_toolset_20251212"

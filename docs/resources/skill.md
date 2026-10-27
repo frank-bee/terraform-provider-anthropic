@@ -50,7 +50,7 @@ EOT
 # Use the skill with an agent
 resource "anthropic_agent" "reviewer" {
   name  = "code-review-agent"
-  model = "claude-sonnet-4-5"
+  model = "claude-sonnet-5-5"
 
   skills {
     skill_id = anthropic_skill.code_reviewer.id

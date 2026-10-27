@@ -71,7 +71,7 @@ func (r *AgentResource) Schema(ctx context.Context, req resource.SchemaRequest, 
 				Required:            true,
 			},
 			"model": schema.StringAttribute{
-				MarkdownDescription: "Model ID for the Agent (e.g. `claude-sonnet-4-5`, `claude-opus-4-5`).",
+				MarkdownDescription: "Model ID for the Agent (e.g. `claude-sonnet-5-5`, `claude-opus-5-5`).",
 				Required:            true,
 			},
 			"system": schema.StringAttribute{

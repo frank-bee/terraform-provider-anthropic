@@ -16,13 +16,13 @@ Manages an Anthropic Managed Agent.
 # Basic agent with a model
 resource "anthropic_agent" "basic" {
   name  = "my-assistant"
-  model = "claude-sonnet-4-5"
+  model = "claude-sonnet-5-5"
 }
 
 # Agent with system prompt and tools
 resource "anthropic_agent" "with_tools" {
   name   = "devops-agent"
-  model  = "claude-sonnet-4-5"
+  model  = "claude-sonnet-5-5"
   system = "You are a DevOps assistant that helps with infrastructure tasks."
 
   tools {
@@ -33,7 +33,7 @@ resource "anthropic_agent" "with_tools" {
 # Agent with MCP server
 resource "anthropic_agent" "with_mcp" {
   name  = "mcp-agent"
-  model = "claude-sonnet-4-5"
+  model = "claude-sonnet-5-5"
 
   tools {
     type = "agent_toolset_20260401"
@@ -52,7 +52,7 @@ resource "anthropic_agent" "with_mcp" {
 # unattended sessions to block waiting for human approval.
 resource "anthropic_agent" "with_permission_policy" {
   name        = "unattended-agent"
-  model       = "claude-sonnet-4-5"
+  model       = "claude-sonnet-5-5"
   description = "Headless analyzer used in CI."
 
   metadata = {
@@ -90,7 +90,7 @@ resource "anthropic_agent" "with_permission_policy" {
 # Agent with skills
 resource "anthropic_agent" "with_skills" {
   name  = "skilled-agent"
-  model = "claude-opus-4-5"
+  model = "claude-opus-5-5"
 
   skills {
     skill_id = "computer_use"
@@ -105,7 +105,7 @@ resource "anthropic_agent" "with_skills" {
 
 ### Required
 
-- `model` (String) Model ID for the Agent (e.g. `claude-sonnet-4-5`, `claude-opus-4-5`).
+- `model` (String) Model ID for the Agent (e.g. `claude-sonnet-5-5`, `claude-opus-5-5`).
 - `name` (String) Name of the Agent.
 
 ### Optional

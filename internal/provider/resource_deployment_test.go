@@ -178,7 +178,7 @@ func testAccDeploymentResourceFixtures(name string) string {
 	return fmt.Sprintf(`
 resource "anthropic_agent" "test" {
 	name  = %[1]q
-	model = "claude-sonnet-4-5"
+	model = "claude-sonnet-5-5"
 }
 
 resource "anthropic_environment" "test" {
